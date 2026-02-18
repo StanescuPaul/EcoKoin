@@ -5,14 +5,79 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
+model User{
+  id String @unique @default(uuid())
+  email String 
+  password String?
+  googleId String? @unique
+  createdAt DateTime @default(now())
+  totalExpenses Float
+  totalSavings Float
+
+  budget Budget[]
+  expenses Expenses[]
+  savings Savings[]
+
+  @@map("user")
+}
+
+model Budget{
+  id String @unique @default(uuid())
+  name String?
+  amount Float
+  startDate DateTime
+  endDate DateTime?
+  isCompleted Boolean @default(false)
+
+  userId String
+  user User @relation(references: [id], fields: [userId], onDelete: Cascade)
+  expenses Expenses[]
+  savings Savings[]
+
+  @@map("budget")
+}
+
+enum ExpensesType{
+  FIXED
+  VARIABLE
+  UNEXPECTED
+}
+
+model Expenses{
+  id String @unique @default(uuid())
+  description String?
+  amount Float
+  date DateTime
+  type ExpensesType @default(VARIABLE)
+
+  userId String
+  user User @relation(references: [id],fields: [userId], onDelete: Cascade)
+  budgetId String
+  budget Budget @relation(references: [id], fields: [budgetId], onDelete: Cascade)
+
+  @@map("expenses")
+}
+
+model Savings{
+  id String @unique @default(uuid())
+  description String?
+  amount Float
+  date DateTime
+
+  userId String
+  user User @relation(references: [id],fields: [userId], onDelete: Cascade)
+  budgetId String
+  budget Budget @relation(references: [id], fields: [budgetId], onDelete: Cascade)
+
+  @@map("savings")
+}
 
 
 
