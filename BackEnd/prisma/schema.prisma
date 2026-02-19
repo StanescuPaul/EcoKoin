@@ -14,12 +14,12 @@ datasource db {
 
 model User{
   id String @unique @default(uuid())
-  email String 
+  email String @unique
   password String?
   googleId String? @unique
   createdAt DateTime @default(now())
-  totalExpenses Float
-  totalSavings Float
+  totalExpenses Float @default(0)
+  totalSavings Float @default(0)
 
   budget Budget[]
   expenses Expenses[]

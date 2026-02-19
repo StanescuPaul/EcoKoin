@@ -5,6 +5,6 @@ const app = express();
 
 app.use(express.json());
 
-app.use(globalHandler); // aici se arunca erorile din throwController
+app.use(globalHandler); // aici se arunca erorile din globalCatch
 
 export default app;
