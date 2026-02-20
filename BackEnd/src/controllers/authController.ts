@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { sendSuccess } from "../utils/responseHandler";
 import { AppError } from "../utils/appError";
 import { globalCatch } from "../utils/throwController";
+import { envs } from "../config/envs";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import db from "../config/db";
 
@@ -20,7 +22,9 @@ export const register = globalCatch(async (req: Request, res: Response) => {
     throw new AppError("The email is not valid", 400);
   }
 
-  const existingEmail = await db.user.findUnique({ where: { email: email } });
+  const existingEmail = await db.user.findUnique({
+    where: { email: email },
+  });
 
   if (existingEmail) {
     throw new AppError("The email is allready used", 400);
@@ -42,7 +46,7 @@ export const register = globalCatch(async (req: Request, res: Response) => {
   return sendSuccess(res, user, "Account succesfully created", 201);
 });
 
-export const login = globalCatch(async (res: Response, req: Request) => {
+export const login = globalCatch(async (req: Request, res: Response) => {
   const { email, password }: authInterface = req.body;
 
   if (!email || !password) {
@@ -64,4 +68,16 @@ export const login = globalCatch(async (res: Response, req: Request) => {
   }
 
   const isValidPassword = await bcrypt.compare(password, user.password);
+
+  if (!isValidPassword) {
+    throw new AppError("invalide email or password", 400);
+  }
+
+  const payload = {
+    userId: user.id,
+  };
+
+  const token = jwt.sign(payload, envs.JWT_SECRET, { expiresIn: "30d" });
+
+  return sendSuccess(res, token, "Login succesfully", 200);
 });

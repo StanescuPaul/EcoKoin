@@ -12,6 +12,12 @@ datasource db {
   provider = "postgresql"
 }
 
+enum ExpensesType{
+  FIXED
+  VARIABLE
+  UNEXPECTED
+}
+
 model User{
   id String @unique @default(uuid())
   email String @unique
@@ -44,11 +50,6 @@ model Budget{
   @@map("budget")
 }
 
-enum ExpensesType{
-  FIXED
-  VARIABLE
-  UNEXPECTED
-}
 
 model Expenses{
   id String @unique @default(uuid())
@@ -78,6 +79,3 @@ model Savings{
 
   @@map("savings")
 }
-
-
-
