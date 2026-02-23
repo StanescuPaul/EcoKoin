@@ -1,4 +1,5 @@
 import { View } from "react-native";
-export function AppNavigation() {
+
+export const HomeScreen = () => {
   return <View></View>;
-}
+};
