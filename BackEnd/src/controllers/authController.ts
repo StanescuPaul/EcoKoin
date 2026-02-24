@@ -54,7 +54,7 @@ export const login = globalCatch(async (req: Request, res: Response) => {
   }
 
   if (!emailRegex.test(email)) {
-    throw new AppError("Invalide type of email", 400);
+    throw new AppError("Invalide email", 400);
   }
 
   const user = await db.user.findUnique({
@@ -79,5 +79,10 @@ export const login = globalCatch(async (req: Request, res: Response) => {
 
   const token = jwt.sign(payload, envs.JWT_SECRET, { expiresIn: "30d" });
 
-  return sendSuccess(res, token, "Login succesfully", 200);
+  const userLoginData = {
+    id: user.id,
+    token: token,
+  };
+
+  return sendSuccess(res, userLoginData, "Login succesfully", 200);
 });
