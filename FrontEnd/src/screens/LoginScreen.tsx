@@ -1,13 +1,149 @@
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { useState, useEffect } from "react";
 import { Colors } from "../constants/Colors";
+import { KAuthInput } from "../components/KAuthInput";
+import { KLoginButton } from "../components/KLoginButton";
+import { KSignupButton } from "../components/KSignupButton";
+import { envs } from "../config/envs";
+import * as SecureStore from "expo-secure-store";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../types";
 
+const API_URL = envs.API_URL;
+
+interface AuthFormInterface {
+  email: string;
+  password: string;
+}
+
+//Generics iti permite sa spui ce type o sa fie continutul acelui obiect/useState etc
 export const LoginScreen = () => {
-  return <View style={styles.mainConstainer}></View>;
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const [authForm, setAuthForm] = useState<AuthFormInterface>({
+    email: "",
+    password: "",
+  });
+  const [allert, setAllert] = useState<null | string>(null);
+
+  useEffect(() => {
+    if (allert) {
+      const timer = setTimeout(() => {
+        setAllert(null);
+      }, 2000);
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [allert]);
+
+  const handleOnLogIn = async () => {
+    try {
+      const rawResponseLogin = await fetch(`${API_URL}/api/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "69420",
+        },
+        body: JSON.stringify(authForm),
+      });
+
+      const responseLogin = await rawResponseLogin.json();
+
+      if (rawResponseLogin.ok && responseLogin.userLoginData.Data.token) {
+        await SecureStore.setItemAsync(
+          "userToken",
+          responseLogin.userLoginData.token,
+        );
+        setAllert(responseLogin.message || "Login succesfully");
+        navigation.replace("Home");
+      } else {
+        setAllert(responseLogin.message);
+        setAuthForm({ ...authForm, password: "" });
+      }
+    } catch (err) {
+      setAllert("Error connecting to the server");
+      setAuthForm({ ...authForm, password: "" });
+    }
+  };
+
+  const handleOnSignUp = () => {
+    navigation.navigate("Register");
+  };
+
+  return (
+    <View style={styles.mainConstainer}>
+      <View style={styles.contentWrapper}>
+        <Text style={styles.titleStyle}>EcoKoin</Text>
+        <View style={styles.formContainer}>
+          {allert && <Text style={styles.allertStyle}>{allert}</Text>}
+          <KAuthInput
+            placeHolder={"Email"}
+            value={authForm.email}
+            onChange={(text) => setAuthForm({ ...authForm, email: text })}
+          />
+          <KAuthInput
+            placeHolder={"Password"}
+            value={authForm.password}
+            onChange={(text) => setAuthForm({ ...authForm, password: text })}
+            isPassword={true}
+          />
+          <KLoginButton placeHolderButton={"Log in"} onPress={handleOnLogIn} />
+        </View>
+      </View>
+      <View style={styles.bottomScreen}>
+        <Text style={styles.bottomTitleStyle}>Create account</Text>
+        <KSignupButton placeHolderButton={"Sign up"} onPress={handleOnSignUp} />
+      </View>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
   mainConstainer: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
+    alignItems: "center",
+  },
+  contentWrapper: {
+    width: "100%",
+    alignItems: "center",
+    marginTop: "40%",
+    paddingHorizontal: "2%",
+    marginBottom: "10%",
+  },
+  formContainer: {
+    width: "100%",
+    gap: 10,
+    alignItems: "center",
+    marginTop: 50,
+  },
+  titleStyle: {
+    color: Colors.secundary,
+    fontSize: 32,
+    fontWeight: "bold",
+  },
+  bottomScreen: {
+    flex: 1,
+    backgroundColor: Colors.primary,
+    width: 500,
+    borderTopLeftRadius: 200,
+    borderTopRightRadius: 200,
+    alignItems: "center",
+    paddingHorizontal: "2%",
+    paddingTop: "10%",
+  },
+  bottomTitleStyle: {
+    color: Colors.backgroundColor,
+    fontSize: 20,
+    marginBottom: 5,
+    fontFamily: "bold",
+    fontWeight: 300,
+  },
+  allertStyle: {
+    color: Colors.primary,
+    fontSize: 15,
+    fontWeight: 400,
+    fontFamily: "bold",
   },
 });

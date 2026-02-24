@@ -3,14 +3,24 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { LoginScreen } from "../screens/LoginScreen";
 import { RegisterScreen } from "../screens/RegisterScreen";
 import { HomeScreen } from "../screens/HomeScreen";
+import { useEffect, useState } from "react";
+import * as SecureStore from "expo-secure-store";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 export const AppNavigator = () => {
-  const authorizationToken = null;
+  const [authToken, setAuthToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = await SecureStore.getItemAsync("userToken");
+      setAuthToken(token);
+    };
+    checkToken();
+  });
   return (
     <Stack.Navigator>
-      {!authorizationToken ? (
+      {!authToken ? (
         <>
           <Stack.Screen
             name="Login"
