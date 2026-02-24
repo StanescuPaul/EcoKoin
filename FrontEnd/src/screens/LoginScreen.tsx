@@ -12,13 +12,19 @@ import { RootStackParamList } from "../types";
 
 const API_URL = envs.API_URL;
 
+interface onLoginSuccesfullyInterface {
+  onLoginSuccesfully: (token: string) => void;
+}
+
 interface AuthFormInterface {
   email: string;
   password: string;
 }
 
 //Generics iti permite sa spui ce type o sa fie continutul acelui obiect/useState etc
-export const LoginScreen = () => {
+export const LoginScreen = ({
+  onLoginSuccesfully,
+}: onLoginSuccesfullyInterface) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [authForm, setAuthForm] = useState<AuthFormInterface>({
     email: "",
@@ -43,20 +49,16 @@ export const LoginScreen = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "69420",
+          "ngrok-skip-browser-warning": "true", //trebuie sters in production
         },
         body: JSON.stringify(authForm),
       });
 
       const responseLogin = await rawResponseLogin.json();
-
-      if (rawResponseLogin.ok && responseLogin.userLoginData.Data.token) {
-        await SecureStore.setItemAsync(
-          "userToken",
-          responseLogin.userLoginData.token,
-        );
+      if (rawResponseLogin.ok && responseLogin.data.token) {
+        await SecureStore.setItemAsync("userToken", responseLogin.data.token);
         setAllert(responseLogin.message || "Login succesfully");
-        navigation.replace("Home");
+        onLoginSuccesfully(responseLogin.data.token); //in loc de navigate facem o rerandare pe AppNavigator pentru a seta token-ul si reranda aplicatia
       } else {
         setAllert(responseLogin.message);
         setAuthForm({ ...authForm, password: "" });
@@ -76,7 +78,9 @@ export const LoginScreen = () => {
       <View style={styles.contentWrapper}>
         <Text style={styles.titleStyle}>EcoKoin</Text>
         <View style={styles.formContainer}>
-          {allert && <Text style={styles.allertStyle}>{allert}</Text>}
+          <Text style={[styles.allertStyle, { opacity: allert ? 1 : 0 }]}>
+            {allert || " "}
+          </Text>
           <KAuthInput
             placeHolder={"Email"}
             value={authForm.email}

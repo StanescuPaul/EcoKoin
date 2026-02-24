@@ -3,5 +3,5 @@ interface envsInterface {
 }
 
 export const envs: envsInterface = {
-  API_URL: process.env.API_URL || "",
+  API_URL: process.env.EXPO_PUBLIC_API_URL || "",
 };
