@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   placeHolderStyle: {
     color: Colors.backgroundColor,
     fontFamily: "bold",
-    fontSize: 32,
-    fontWeight: 500,
+    fontSize: 30,
+    fontWeight: 400,
   },
 });

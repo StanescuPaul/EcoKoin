@@ -12,21 +12,19 @@ import { RootStackParamList } from "../types";
 
 const API_URL = envs.API_URL;
 
-interface onLoginSuccesfullyProps {
+interface LoginScreenProps {
   onLoginSuccesfully: (token: string) => void;
 }
 
-interface AuthFormInterface {
+interface AuthFormProps {
   email: string;
   password: string;
 }
 
 //Generics iti permite sa spui ce type o sa fie continutul acelui obiect/useState etc
-export const LoginScreen = ({
-  onLoginSuccesfully,
-}: onLoginSuccesfullyProps) => {
+export const LoginScreen = ({ onLoginSuccesfully }: LoginScreenProps) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-  const [authForm, setAuthForm] = useState<AuthFormInterface>({
+  const [authForm, setAuthForm] = useState<AuthFormProps>({
     email: "",
     password: "",
   });
@@ -97,7 +95,10 @@ export const LoginScreen = ({
       </View>
       <View style={styles.bottomScreen}>
         <Text style={styles.bottomTitleStyle}>Create account</Text>
-        <KSignupButton placeHolderButton={"Sign up"} onPress={handleOnSignUp} />
+        <KSignupButton
+          placeHolderButton={"Create account"}
+          onPress={handleOnSignUp}
+        />
       </View>
     </View>
   );

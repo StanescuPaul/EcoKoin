@@ -19,8 +19,8 @@ export const KSignupButton = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: "60%",
-    aspectRatio: 16 / 2.5,
+    width: "55%",
+    aspectRatio: 16 / 2.6,
     borderWidth: 1,
     backgroundColor: Colors.backgroundColor,
     borderColor: Colors.primary,
@@ -33,9 +33,9 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
   },
   placeHolderStyle: {
-    color: Colors.primary,
+    color: Colors.textColor,
     fontFamily: "bold",
-    fontSize: 32,
-    fontWeight: 500,
+    fontSize: 30,
+    fontWeight: 400,
   },
 });
