@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { tokenRequest } from "../utils/tokenRequest";
 import { sendSuccess } from "../utils/responseHandler";
 import { AppError } from "../utils/appError";
 import { globalCatch } from "../utils/throwController";
@@ -86,3 +87,21 @@ export const login = globalCatch(async (req: Request, res: Response) => {
 
   return sendSuccess(res, userLoginData, "Login succesfully", 200);
 });
+
+export const authPersist = globalCatch(
+  async (req: tokenRequest, res: Response) => {
+    const { userId } = req.user;
+
+    const user = await db.user.findUnique({ where: { id: userId } });
+
+    if (!user) {
+      throw new AppError("User not found", 404);
+    }
+
+    const userDataPersist = {
+      id: user.id,
+    };
+
+    sendSuccess(res, userDataPersist);
+  },
+);

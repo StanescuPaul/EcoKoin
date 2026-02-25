@@ -1,10 +1,11 @@
 import { Response } from "express";
 import { envs } from "../config/envs";
 
+//din cauza basic value la message si status un trebuie sa il scriu in permanenta daca acesta este statusul
 export const sendSuccess = (
   res: Response,
   data: any,
-  message = "Success",
+  message: string = "Success",
   status: number = 200,
 ) => {
   res.status(status).json({
