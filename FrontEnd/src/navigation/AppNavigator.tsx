@@ -5,6 +5,7 @@ import { RegisterScreen } from "../screens/RegisterScreen";
 import { HomeScreen } from "../screens/HomeScreen";
 import { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
+import { LoadingScreen } from "../screens/LoadingScreen";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -22,9 +23,10 @@ export const AppNavigator = () => {
     checkToken();
   }, []);
 
-  //ToDo: loading screen
-  // if (isLoading) return "ceva";
+  //randare loading screen pana apare homescreen-ul
+  if (isLoading) return <LoadingScreen />;
 
+  //primesc callback de la LoginScreen cu token pentru a forta o rerandare ca sa trecem la ecranele protected
   const onLoginSuccesfully = (token: string) => {
     setAuthToken(token);
   };
@@ -47,7 +49,7 @@ export const AppNavigator = () => {
           <Stack.Screen
             name="Register"
             component={RegisterScreen}
-            options={{ headerShown: true }}
+            options={{ headerShown: false }}
           />
         </>
       ) : (

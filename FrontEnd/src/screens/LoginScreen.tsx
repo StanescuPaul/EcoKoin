@@ -12,7 +12,7 @@ import { RootStackParamList } from "../types";
 
 const API_URL = envs.API_URL;
 
-interface onLoginSuccesfullyInterface {
+interface onLoginSuccesfullyProps {
   onLoginSuccesfully: (token: string) => void;
 }
 
@@ -24,7 +24,7 @@ interface AuthFormInterface {
 //Generics iti permite sa spui ce type o sa fie continutul acelui obiect/useState etc
 export const LoginScreen = ({
   onLoginSuccesfully,
-}: onLoginSuccesfullyInterface) => {
+}: onLoginSuccesfullyProps) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [authForm, setAuthForm] = useState<AuthFormInterface>({
     email: "",
@@ -56,7 +56,7 @@ export const LoginScreen = ({
 
       const responseLogin = await rawResponseLogin.json();
       if (rawResponseLogin.ok && responseLogin.data.token) {
-        await SecureStore.setItemAsync("userToken", responseLogin.data.token);
+        await SecureStore.setItemAsync("userToken", responseLogin.data.token); //Introducem token in secure store ca sa il poata lua aplicatia la fiecare repornire pentru a persista login-ul
         setAllert(responseLogin.message || "Login succesfully");
         onLoginSuccesfully(responseLogin.data.token); //in loc de navigate facem o rerandare pe AppNavigator pentru a seta token-ul si reranda aplicatia
       } else {
@@ -70,7 +70,7 @@ export const LoginScreen = ({
   };
 
   const handleOnSignUp = () => {
-    navigation.navigate("Register");
+    navigation.replace("Register");
   };
 
   return (
@@ -114,13 +114,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: "40%",
     paddingHorizontal: "2%",
-    marginBottom: "10%",
   },
   formContainer: {
     width: "100%",
     gap: 10,
     alignItems: "center",
-    marginTop: 50,
+    marginTop: "10%",
   },
   titleStyle: {
     color: Colors.secundary,
@@ -136,6 +135,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: "2%",
     paddingTop: "10%",
+    marginTop: "10%",
   },
   bottomTitleStyle: {
     color: Colors.backgroundColor,
