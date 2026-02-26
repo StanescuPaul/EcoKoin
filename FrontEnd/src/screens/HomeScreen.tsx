@@ -2,10 +2,10 @@ import { Button, StyleSheet, View } from "react-native";
 
 interface HomeScreenProps {
   onLogOut: () => void;
-  userData: string | undefined;
+  userId: string | undefined;
 }
 
-export const HomeScreen = ({ userData, onLogOut }: HomeScreenProps) => {
+export const HomeScreen = ({ userId, onLogOut }: HomeScreenProps) => {
   return (
     <View style={styles.container}>
       <Button title="back" onPress={onLogOut} />

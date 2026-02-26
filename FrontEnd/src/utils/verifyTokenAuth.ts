@@ -7,7 +7,7 @@ export interface userProps {
   token: string;
   userId: string;
 }
-
+//verificam token daca a expirat sau nu prin ruta /authPersist si feth-uim si userId pentru a il pasa spre HomeScreen prin useAuth
 export const verifyTokenAuth = async () => {
   try {
     const token: string | null = await SecureStore.getItemAsync("userToken");
@@ -15,7 +15,7 @@ export const verifyTokenAuth = async () => {
       return null;
     }
 
-    const rawResponsePersistLogin = await fetch(`${API_URL}/authPersist`, {
+    const rawResponsePersistLogin = await fetch(`${API_URL}/api/authPersist`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -24,14 +24,15 @@ export const verifyTokenAuth = async () => {
 
     const responsePersistLogin = await rawResponsePersistLogin.json();
 
-    const userData: userProps = {
-      token: token,
-      userId: responsePersistLogin.data.id,
-    };
-
     if (rawResponsePersistLogin.ok) {
-      return userData;
+      const sesionData: userProps = {
+        token: token,
+        userId: responsePersistLogin.data.id,
+      };
+      return sesionData;
     } else {
+      // daca nu e ok raspunsul inseamna ca e o eraore cu token-ul sau a expirat
+      console.log(responsePersistLogin.message);
       await SecureStore.deleteItemAsync("userToken");
       return null;
     }

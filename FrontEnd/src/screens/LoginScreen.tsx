@@ -9,11 +9,12 @@ import * as SecureStore from "expo-secure-store";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../types";
+import { userProps } from "../utils/verifyTokenAuth";
 
 const API_URL = envs.API_URL;
 
 interface LoginScreenProps {
-  onLoginSuccesfully: (token: string) => void;
+  onLoginSuccesfully: (data: userProps) => void;
 }
 
 interface AuthFormProps {
@@ -47,7 +48,6 @@ export const LoginScreen = ({ onLoginSuccesfully }: LoginScreenProps) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true", //trebuie sters in production
         },
         body: JSON.stringify(authForm),
       });
@@ -56,7 +56,7 @@ export const LoginScreen = ({ onLoginSuccesfully }: LoginScreenProps) => {
       if (rawResponseLogin.ok && responseLogin.data.token) {
         await SecureStore.setItemAsync("userToken", responseLogin.data.token); //Introducem token in secure store ca sa il poata lua aplicatia la fiecare repornire pentru a persista login-ul
         setAllert(responseLogin.message || "Login succesfully");
-        onLoginSuccesfully(responseLogin.data.token); //in loc de navigate facem o rerandare pe AppNavigator pentru a seta token-ul si reranda aplicatia
+        onLoginSuccesfully(responseLogin.data); //in loc de navigate facem o rerandare pe AppNavigator pentru a seta token-ul si reranda aplicatia
       } else {
         setAllert(responseLogin.message);
         setAuthForm({ ...authForm, password: "" });
