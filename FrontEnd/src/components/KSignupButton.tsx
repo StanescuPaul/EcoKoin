@@ -3,15 +3,15 @@ import { Colors } from "../constants/Colors";
 
 interface AuthButtonInterface {
   placeHolderButton: string;
-  onPress: () => void;
+  onPressSignUp: () => void;
 }
 
 export const KSignupButton = ({
   placeHolderButton,
-  onPress,
+  onPressSignUp,
 }: AuthButtonInterface) => {
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
+    <TouchableOpacity style={styles.container} onPress={onPressSignUp}>
       <Text style={styles.placeHolderStyle}>{placeHolderButton}</Text>
     </TouchableOpacity>
   );

@@ -3,9 +3,10 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { LoginScreen } from "../screens/LoginScreen";
 import { RegisterScreen } from "../screens/RegisterScreen";
 import { HomeScreen } from "../screens/HomeScreen";
-import { useEffect, useState } from "react";
-import * as SecureStore from "expo-secure-store";
 import { LoadingScreen } from "../screens/LoadingScreen";
+import { UserProfileScreen } from "../screens/UserProfileScreen";
+import * as SecureStore from "expo-secure-store";
+import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { userProps } from "../utils/verifyTokenAuth";
 
@@ -13,9 +14,9 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 export const AppNavigator = () => {
   const [session, setSession] = useState<userProps | null>(null);
-  const { sesionData, isLoading, setSesionData } = useAuth();
+  const { sessionData, isLoading, setSessionData } = useAuth();
 
-  const currentSession = session || sesionData;
+  const currentSession = session || sessionData;
 
   //deci e vorba ca sesionData si isLoading care venea din use auth erau setate loadingScreen vedea ca isLoading e fals dar problema e ca dura pana se activa setSession in AppNavigation cu datale din useAuth pentru ca useEffect se executa la final
   // useEffect(() => {
@@ -35,7 +36,7 @@ export const AppNavigator = () => {
   const handleOnLogOut = async () => {
     await SecureStore.deleteItemAsync("userToken");
     setSession(null);
-    setSesionData(null);
+    setSessionData(null);
   };
 
   return (
@@ -55,20 +56,22 @@ export const AppNavigator = () => {
           />
         </>
       ) : (
-        <Stack.Screen
-          name="Home"
-          //momentan pentru a ma potea intoarce din home
-          // component={HomeScreen}
-          options={{ headerShown: false }}
-        >
-          {(props) => (
-            <HomeScreen
-              {...props}
-              userId={currentSession.userId}
-              onLogOut={handleOnLogOut} //scap de asta o data facut profile
-            />
-          )}
-        </Stack.Screen>
+        <>
+          <Stack.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="UserProfileScreen"
+            options={{ headerShown: false }}
+          >
+            {(props) => (
+              <UserProfileScreen {...props} onLogOut={handleOnLogOut} />
+            )}
+          </Stack.Screen>
+        </>
       )}
     </Stack.Navigator>
   );

@@ -25,11 +25,11 @@ export const verifyTokenAuth = async () => {
     const responsePersistLogin = await rawResponsePersistLogin.json();
 
     if (rawResponsePersistLogin.ok) {
-      const sesionData: userProps = {
+      const sessionData: userProps = {
         token: token,
         userId: responsePersistLogin.data.id,
       };
-      return sesionData;
+      return sessionData;
     } else {
       // daca nu e ok raspunsul inseamna ca e o eraore cu token-ul sau a expirat
       console.log(responsePersistLogin.message);

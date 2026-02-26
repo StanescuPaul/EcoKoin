@@ -90,14 +90,17 @@ export const LoginScreen = ({ onLoginSuccesfully }: LoginScreenProps) => {
             onChange={(text) => setAuthForm({ ...authForm, password: text })}
             isPassword={true}
           />
-          <KLoginButton placeHolderButton={"Log in"} onPress={handleOnLogIn} />
+          <KLoginButton
+            placeHolderButton={"Log in"}
+            onPressLogIn={handleOnLogIn}
+          />
         </View>
       </View>
       <View style={styles.bottomScreen}>
         <Text style={styles.bottomTitleStyle}>Create account</Text>
         <KSignupButton
           placeHolderButton={"Create account"}
-          onPress={handleOnSignUp}
+          onPressSignUp={handleOnSignUp}
         />
       </View>
     </View>

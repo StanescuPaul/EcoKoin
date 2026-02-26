@@ -1,7 +1,8 @@
 export type RootStackParamList = {
-  Home: { userId: string | undefined };
   Register: undefined;
   Login: undefined;
+  Home: undefined;
+  UserProfileScreen: undefined;
 };
 
 //dam parametrii la ecrane doar cand avem nevoie de parametrii pe acel ecran cum ar fi id-ul unui task pe care il folosim in ecranul task-ului

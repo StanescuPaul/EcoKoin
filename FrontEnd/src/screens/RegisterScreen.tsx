@@ -116,12 +116,18 @@ export const RegisterScreen = () => {
             }
             isPassword={true}
           />
-          <KLoginButton placeHolderButton="Sign up" onPress={handleOnSignUp} />
+          <KLoginButton
+            placeHolderButton="Sign up"
+            onPressLogIn={handleOnSignUp}
+          />
         </View>
       </View>
       <View style={styles.bottomScreenContainer}>
         <Text style={styles.bottomTitle}>Allready have an account</Text>
-        <KSignupButton placeHolderButton="Log in" onPress={handleOnLogIn} />
+        <KSignupButton
+          placeHolderButton="Log in"
+          onPressSignUp={handleOnLogIn}
+        />
       </View>
     </View>
   );

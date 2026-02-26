@@ -1,14 +1,24 @@
-import { Button, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { Colors } from "../constants/Colors";
+import { KProfileButton } from "../components/KProfileButton";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../types";
 
 interface HomeScreenProps {
-  onLogOut: () => void;
-  userId: string | undefined;
+  userId: string;
 }
 
-export const HomeScreen = ({ userId, onLogOut }: HomeScreenProps) => {
+export const HomeScreen = () => {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
+  const handleOnProfileButton = () => {
+    navigation.navigate("UserProfileScreen");
+  };
+  //ToDo: scrollable si sa ii pot adauga headder-ul care a nu se miste cu scroll-ul
   return (
     <View style={styles.container}>
-      <Button title="back" onPress={onLogOut} />
+      <KProfileButton onProfileButton={handleOnProfileButton} />
     </View>
   );
 };
@@ -18,5 +28,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: Colors.backgroundColor,
   },
 });

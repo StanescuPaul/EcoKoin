@@ -1,7 +1,7 @@
 import { TextInput, View, StyleSheet } from "react-native";
 import { Colors } from "../constants/Colors";
 
-interface propsAuthInput {
+interface AuthInputProps {
   placeHolder?: string;
   value: string;
   onChange: (text: string) => void;
@@ -13,7 +13,7 @@ export const KAuthInput = ({
   value,
   onChange,
   isPassword = false,
-}: propsAuthInput) => {
+}: AuthInputProps) => {
   return (
     <View style={styles.container}>
       <TextInput
@@ -23,6 +23,9 @@ export const KAuthInput = ({
         value={value}
         onChangeText={onChange}
         secureTextEntry={isPassword}
+        textContentType={isPassword ? "password" : "emailAddress"}
+        autoCapitalize="none"
+        keyboardType={isPassword ? "default" : "email-address"}
       />
     </View>
   );
