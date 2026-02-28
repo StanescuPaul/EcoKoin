@@ -3,10 +3,14 @@ import { Colors } from "../constants/Colors";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../types";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useLayoutEffect } from "react";
 import { KProfileLable } from "../components/KProfileLable";
 import { useAuth } from "../hooks/useAuth";
 import { envs } from "../config/envs";
+import { KEditButton } from "../components/KEditButton";
+import { KBackButton } from "../components/KBackButton";
+import { KProfileInput } from "../components/KProfileInput";
+import { KSaveButton } from "../components/KSaveButton";
 
 const API_URL = envs.API_URL;
 
@@ -22,10 +26,20 @@ interface UserData {
   totalSavings: string;
 }
 
+interface UserDataUpdate {
+  newUserName?: string;
+  newEmail?: string;
+  newPassword?: string;
+}
+
 export const UserProfileScreen = ({ onLogOut }: UserProfileScreenProps) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
   const { sessionData } = useAuth();
+  const [userDataUpdate, setUserDataUpdate] = useState<UserDataUpdate | null>(
+    null,
+  );
 
   useEffect(() => {
     const userProfileFetch = async () => {
@@ -57,21 +71,54 @@ export const UserProfileScreen = ({ onLogOut }: UserProfileScreenProps) => {
       }
     };
     userProfileFetch();
+  }, [sessionData]);
+
+  useLayoutEffect(() => {
     if (userData?.userName === "undefined")
       navigation.setOptions({ title: `${userData?.userName}` });
-  }, [sessionData]);
+    navigation.setOptions({
+      headerLeft: () => <KBackButton onPressBack={handleOnBackButton} />,
+      headerRight: () =>
+        isEditing ? (
+          <KSaveButton onPressSave={handleOnPressSaveButton} />
+        ) : (
+          <KEditButton onPressEdit={handleOnEditButton} />
+        ),
+    });
+  }, [navigation, isEditing, userData]);
+
+  const handleOnBackButton = () => {
+    navigation.goBack();
+  };
+
+  const handleOnEditButton = () => {
+    setIsEditing(true);
+  };
+
+  const handleOnPressSaveButton = () => {
+    setIsEditing(false);
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.contentWrapp}>
-        <KProfileLable
-          placeHolderLable="User"
-          userSpecificData={userData?.userName}
-        />
-        <KProfileLable
-          placeHolderLable="Email"
-          userSpecificData={userData?.email}
-        />
+        {isEditing ? (
+          <>
+            <KProfileInput placeHolder={"User name"} />
+            <KProfileInput placeHolder={"Email"} />
+          </>
+        ) : (
+          <>
+            <KProfileLable
+              placeHolderLable="User"
+              userSpecificData={userData?.userName}
+            />
+            <KProfileLable
+              placeHolderLable="Email"
+              userSpecificData={userData?.email}
+            />
+          </>
+        )}
         <KProfileLable
           placeHolderLable="Member"
           userSpecificData={
@@ -89,8 +136,6 @@ export const UserProfileScreen = ({ onLogOut }: UserProfileScreenProps) => {
             <Text style={styles.textMoney}>{userData?.totalExpenses}</Text>
           </View>
         </View>
-
-        {/* <Button title="back" onPress={onLogOut} /> */}
       </View>
     </View>
   );

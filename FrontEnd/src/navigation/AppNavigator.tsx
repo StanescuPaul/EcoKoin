@@ -74,7 +74,13 @@ export const AppNavigator = () => {
             component={HomeScreen}
           />
 
-          <Stack.Screen name="UserProfileScreen" options={{ title: "Profile" }}>
+          <Stack.Screen
+            name="UserProfileScreen"
+            options={{
+              title: "Profile",
+              headerLeft: () => null,
+            }}
+          >
             {(props) => (
               <UserProfileScreen {...props} onLogOut={handleOnLogOut} />
             )}

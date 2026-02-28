@@ -12,9 +12,8 @@ export const KProfileLable = ({
 }: KProfileLableProps) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.lableTextStyle}>
-        {placeHolderLable}: {userSpecificData}
-      </Text>
+      <Text style={styles.lableTextStyle}>{placeHolderLable}: </Text>
+      <Text style={styles.lableTextStyle}>{userSpecificData}</Text>
     </View>
   );
 };
@@ -25,8 +24,9 @@ const styles = StyleSheet.create({
     aspectRatio: 16 / 2.5,
     backgroundColor: Colors.primary,
     borderRadius: 15,
-    justifyContent: "center",
     paddingHorizontal: "3%",
+    flexDirection: "row",
+    alignItems: "center",
   },
   lableTextStyle: {
     color: Colors.textColor,

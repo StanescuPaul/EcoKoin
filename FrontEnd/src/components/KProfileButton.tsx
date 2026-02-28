@@ -17,7 +17,7 @@ export const KProfileButton = ({ onProfileButton }: KProfileButtonProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: "80%",
+    width: "27.5%",
     aspectRatio: 1,
     borderRadius: 999,
     marginLeft: "10%",
