@@ -1,9 +1,9 @@
 export const Colors = {
   //culori de baza
-  backgroundColor: "#0c0c0e",
-  primary: "#8c8b91",
+  backgroundColor: "#000000",
+  primary: "#2b2b2c",
   textColor: "#ffffff",
-  secundary: "#8b8b8e",
+  secundary: "#a1a1a4",
   accent: "#171547",
   shadowColorPrimary: "#575757",
   shadowColorSecundary: "#46464b",
@@ -16,3 +16,5 @@ export const Colors = {
 //sec shadow prev #9797cf
 //primaryprev #87879c
 // background prev #090913
+// #8c8b91
+// #0c0c0e

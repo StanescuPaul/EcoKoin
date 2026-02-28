@@ -172,11 +172,11 @@ const styles = StyleSheet.create({
     paddingTop: "10%",
   },
   bottomTitle: {
-    color: Colors.backgroundColor,
+    color: Colors.textColor,
     fontSize: 20,
     marginBottom: 5,
     fontFamily: "bold",
-    fontWeight: 300,
+    fontWeight: 200,
   },
   allertStyle: {
     color: Colors.primary,

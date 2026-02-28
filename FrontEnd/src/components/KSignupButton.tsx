@@ -21,16 +21,12 @@ const styles = StyleSheet.create({
   container: {
     width: "55%",
     aspectRatio: 16 / 2.6,
-    borderWidth: 1,
+    borderWidth: 0.3,
     backgroundColor: Colors.backgroundColor,
-    borderColor: Colors.primary,
+    borderColor: Colors.secundary,
     borderRadius: 15,
     alignItems: "center",
     justifyContent: "center",
-    shadowOffset: { width: 5, height: 5 },
-    shadowColor: Colors.shadowColorPrimary,
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
   },
   placeHolderStyle: {
     color: Colors.textColor,

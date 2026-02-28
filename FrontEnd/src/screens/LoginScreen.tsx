@@ -80,7 +80,7 @@ export const LoginScreen = ({ onLoginSuccesfully }: LoginScreenProps) => {
             {allert || " "}
           </Text>
           <KAuthInput
-            placeHolder={"Email"}
+            placeHolder="Email"
             value={authForm.email}
             onChange={(text) => setAuthForm({ ...authForm, email: text })}
           />
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     marginTop: "10%",
   },
   bottomTitleStyle: {
-    color: Colors.backgroundColor,
+    color: Colors.textColor,
     fontSize: 20,
     marginBottom: 5,
     fontFamily: "bold",

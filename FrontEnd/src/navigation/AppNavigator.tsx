@@ -9,6 +9,8 @@ import * as SecureStore from "expo-secure-store";
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { userProps } from "../utils/verifyTokenAuth";
+import { Colors } from "../constants/Colors";
+import { Button } from "react-native";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -40,7 +42,16 @@ export const AppNavigator = () => {
   };
 
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: Colors.backgroundColor,
+        },
+        headerTitleStyle: {
+          color: Colors.textColor, //le scriu in App.tsx pentru ca in ecran se aplicau style-urile prea tarziu
+        },
+      }}
+    >
       {!currentSession?.token ? (
         <>
           <Stack.Screen name="Login" options={{ headerShown: false }}>
@@ -59,14 +70,11 @@ export const AppNavigator = () => {
         <>
           <Stack.Screen
             name="Home"
+            options={{ title: "Budgets" }}
             component={HomeScreen}
-            options={{ headerShown: false }}
           />
 
-          <Stack.Screen
-            name="UserProfileScreen"
-            options={{ headerShown: false }}
-          >
+          <Stack.Screen name="UserProfileScreen" options={{ title: "Profile" }}>
             {(props) => (
               <UserProfileScreen {...props} onLogOut={handleOnLogOut} />
             )}

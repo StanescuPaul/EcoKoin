@@ -17,12 +17,10 @@ export const KProfileButton = ({ onProfileButton }: KProfileButtonProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: "4%",
+    height: "80%",
     aspectRatio: 1,
     borderRadius: 999,
-    position: "absolute",
-    top: "7%",
-    left: "3.5%",
+    marginLeft: "10%",
   },
   imageStyle: {
     width: "100%",
