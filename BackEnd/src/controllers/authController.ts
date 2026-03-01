@@ -92,10 +92,10 @@ export const authPersist = globalCatch(
   async (req: tokenRequest, res: Response) => {
     const { userId } = req.user;
 
-    const user = await db.user.findUnique({ where: { id: userId } });
+    const user = await db.user.findFirst({ where: { id: userId } });
 
     if (!user) {
-      throw new AppError("User not found", 404);
+      throw new AppError("Acces denied. Token expired or is invalid", 404);
     }
 
     const userDataPersist = {

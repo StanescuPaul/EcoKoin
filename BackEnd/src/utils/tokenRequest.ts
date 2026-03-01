@@ -1,5 +1,6 @@
 import { Request } from "express";
 
+//tipul de date pe care il poate lua req.user
 export interface tokenData {
   userId: string;
 }

@@ -21,6 +21,7 @@ enum ExpensesType{
 model User{
   id String @unique @default(uuid())
   email String @unique
+  userName String?
   password String?
   googleId String? @unique
   createdAt DateTime @default(now())
