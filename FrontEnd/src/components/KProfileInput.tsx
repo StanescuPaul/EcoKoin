@@ -4,7 +4,7 @@ import { Colors } from "../constants/Colors";
 interface KProfileInputProps {
   placeHolder: string;
   value?: string;
-  onChange?: (text: string) => void;
+  onChange: (text: string) => void;
 }
 
 export const KProfileInput = ({
