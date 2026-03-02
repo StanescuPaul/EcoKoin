@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import db from "../config/db";
 
-interface authInterface {
+interface AuthProps {
   email: string;
   password: string;
 }
@@ -16,7 +16,7 @@ interface authInterface {
 const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const register = globalCatch(async (req: Request, res: Response) => {
-  const { email, password }: authInterface = req.body;
+  const { email, password }: AuthProps = req.body;
   const salt: number = 10;
 
   if (!emailRegex.test(email)) {
@@ -48,7 +48,7 @@ export const register = globalCatch(async (req: Request, res: Response) => {
 });
 
 export const login = globalCatch(async (req: Request, res: Response) => {
-  const { email, password }: authInterface = req.body;
+  const { email, password }: AuthProps = req.body;
 
   if (!email || !password) {
     throw new AppError("Email or password is missing", 400);

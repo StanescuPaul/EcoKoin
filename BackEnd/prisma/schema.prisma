@@ -18,6 +18,11 @@ enum ExpensesType{
   UNEXPECTED
 }
 
+enum Currency{
+  RON
+  EUR
+}
+
 model User{
   id String @unique @default(uuid())
   email String @unique
