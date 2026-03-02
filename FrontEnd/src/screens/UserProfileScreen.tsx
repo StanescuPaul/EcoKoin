@@ -44,16 +44,15 @@ export const UserProfileScreen = ({ onLogOut }: UserProfileScreenProps) => {
     // newPassword: "",
   });
   const [allert, setAllert] = useState<string | null>(null);
-
   useEffect(() => {
     const userProfileFetch = async () => {
       if (!sessionData?.userId || !sessionData.token) {
         return;
       }
-
+      console.log(sessionData?.token);
       try {
         const rawResponseUserProfile = await fetch(
-          `${API_URL}/api/user/${sessionData.userId}/profile`,
+          `${API_URL}/api/users/${sessionData.userId}/profile`,
           {
             method: "GET",
             headers: {
@@ -105,7 +104,7 @@ export const UserProfileScreen = ({ onLogOut }: UserProfileScreenProps) => {
   const handleOnPressSaveButton = async () => {
     try {
       const rawResponseProfileUserUpdate = await fetch(
-        `${API_URL}/api/user/${sessionData?.userId}/profile`,
+        `${API_URL}/api/users/${sessionData?.userId}/profile`,
         {
           method: "PUT",
           headers: {
