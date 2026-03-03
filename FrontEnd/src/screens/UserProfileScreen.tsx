@@ -49,7 +49,7 @@ export const UserProfileScreen = ({ onLogOut }: UserProfileScreenProps) => {
       if (!sessionData?.userId || !sessionData.token) {
         return;
       }
-      console.log(sessionData?.token);
+
       try {
         const rawResponseUserProfile = await fetch(
           `${API_URL}/api/users/${sessionData.userId}/profile`,
@@ -116,7 +116,7 @@ export const UserProfileScreen = ({ onLogOut }: UserProfileScreenProps) => {
       );
       const responseProfileUserUpdate =
         await rawResponseProfileUserUpdate.json();
-      console.log(userDataUpdate);
+
       if (rawResponseProfileUserUpdate.ok) {
         setIsEditing(false);
         setUserData(responseProfileUserUpdate.data);
