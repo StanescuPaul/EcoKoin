@@ -9,7 +9,7 @@ interface KButtonBudgetsProps {
 
 export const KButtonBudgets = ({ isEditing, budgets }: KButtonBudgetsProps) => {
   if (!budgets) {
-    return null;
+    return;
   }
 
   const checkImage = require("../../assets/check.png");
@@ -25,18 +25,28 @@ export const KButtonBudgets = ({ isEditing, budgets }: KButtonBudgetsProps) => {
       ]}
     >
       <View style={styles.leftSide}>
-        <Text style={styles.nameBudgetStyle}>February</Text>
-        <Text style={styles.dateBudgetStyle}>2025-10-03</Text>
+        <Text style={styles.nameBudgetStyle}>{budgets.name}</Text>
+        <View style={styles.dateGroup}>
+          <Text style={styles.dateBudgetStyle}>
+            {new Date(budgets.startDate).toLocaleDateString("ro-RO")} -
+          </Text>
+          <Text style={styles.dateBudgetStyle}>
+            {" "}
+            {budgets.endDate
+              ? new Date(budgets.endDate).toLocaleDateString("ro-RO")
+              : "In progress"}
+          </Text>
+        </View>
       </View>
       {isEditing && (
         <View style={styles.rightSide}>
-          <TouchableOpacity style={styles.rightSideButtonStyle}>
+          <TouchableOpacity>
             <Image
               style={styles.rightSideImageStyle}
               source={imageSourceCheck}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.rightSideButtonStyle}>
+          <TouchableOpacity>
             <Image
               style={styles.rightSideImageStyle}
               source={require("../../assets/delete.png")}
@@ -81,9 +91,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 300,
   },
-  rightSideButtonStyle: {},
   rightSideImageStyle: {
     height: "55%",
     aspectRatio: 1,
+  },
+
+  dateGroup: {
+    flexDirection: "row",
   },
 });

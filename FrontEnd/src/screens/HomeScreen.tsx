@@ -26,7 +26,8 @@ export interface BudgetsProps {
 export const HomeScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const { sessionData } = useAuth();
-  const [budgets, setBudgets] = useState<BudgetsProps | null>(null);
+  //un array de BudgetsProps
+  const [budgets, setBudgets] = useState<BudgetsProps[]>([]);
   const [allertBudgets, setAllertBudgets] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
@@ -77,7 +78,7 @@ export const HomeScreen = () => {
         const responseBudgetsGet = await rawResponseBudgetsGet.json();
 
         if (rawResponseBudgetsGet.ok) {
-          setBudgets(responseBudgetsGet.data);
+          setBudgets(responseBudgetsGet.data || []);
         } else {
           setAllertBudgets(responseBudgetsGet.message);
         }
@@ -87,19 +88,33 @@ export const HomeScreen = () => {
       }
     };
     budgetsGet();
-  }, []);
+  }, [sessionData]);
 
   //ToDo: scrollable si sa ii pot adauga headder-ul care a nu se miste cu scroll-ul
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <KButtonBudgets isEditing={isEditing} budgets={budgets} />
+    //contentContainerStyle pentru tot ce se misca pe ecran iar style pentru ce e in spate ca si cand as da overscroll sa nu se vada alb in spate
+    <ScrollView
+      contentContainerStyle={styles.container}
+      style={styles.containerScroll}
+    >
+      {budgets.map((budget) => (
+        <KButtonBudgets
+          key={budget.id}
+          isEditing={isEditing}
+          budgets={budget}
+        />
+      ))}
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  containerScroll: {
     flex: 1,
+    backgroundColor: Colors.backgroundColor,
+  },
+  container: {
+    flexGrow: 1,
     backgroundColor: Colors.backgroundColor,
     alignItems: "center",
     paddingTop: "10%",
