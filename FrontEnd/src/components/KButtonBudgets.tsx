@@ -16,7 +16,6 @@ export const KButtonBudgets = ({ isEditing, budgets }: KButtonBudgetsProps) => {
   const unCheckImage = require("../../assets/uncheck.png");
 
   const imageSourceCheck = budgets.isCompleted ? checkImage : unCheckImage;
-
   return (
     <TouchableOpacity
       style={[
@@ -42,13 +41,13 @@ export const KButtonBudgets = ({ isEditing, budgets }: KButtonBudgetsProps) => {
         <View style={styles.rightSide}>
           <TouchableOpacity>
             <Image
-              style={styles.rightSideImageStyle}
+              style={styles.rightSideImageCheckStyle}
               source={imageSourceCheck}
             />
           </TouchableOpacity>
           <TouchableOpacity>
             <Image
-              style={styles.rightSideImageStyle}
+              style={styles.rightSideImageCheckStyle}
               source={require("../../assets/delete.png")}
             />
           </TouchableOpacity>
@@ -64,7 +63,7 @@ const styles = StyleSheet.create({
     aspectRatio: 16 / 3,
     backgroundColor: Colors.primary,
     borderRadius: 30,
-    paddingHorizontal: "7%",
+    paddingHorizontal: "5%",
     flexDirection: "row",
     justifyContent: "space-between",
   },
@@ -74,7 +73,7 @@ const styles = StyleSheet.create({
   },
   leftSide: {
     justifyContent: "center",
-    width: "75%",
+    width: "79%",
   },
   rightSide: {
     flexDirection: "row",
@@ -91,12 +90,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 300,
   },
-  rightSideImageStyle: {
-    height: "55%",
-    aspectRatio: 1,
-  },
-
   dateGroup: {
     flexDirection: "row",
+  },
+  rightSideImageCheckStyle: {
+    height: "50%",
+    aspectRatio: 1,
+    tintColor: Colors.textColor,
   },
 });

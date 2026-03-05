@@ -21,6 +21,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: 999,
     marginLeft: "10%",
+    marginBottom: "2%",
   },
   imageStyle: {
     width: "100%",
