@@ -4,11 +4,15 @@ import { Colors } from "../constants/Colors";
 interface KInputSearchBudgetsProps {
   placeHolder: string;
   onFocus: () => void;
+  onChange: (text: string) => void;
+  value: string;
 }
 
 export const KInputSearchBudgets = ({
   placeHolder,
   onFocus,
+  onChange,
+  value,
 }: KInputSearchBudgetsProps) => {
   return (
     <TextInput
@@ -16,6 +20,8 @@ export const KInputSearchBudgets = ({
       placeholder={placeHolder}
       placeholderTextColor={Colors.textColor}
       onFocus={onFocus}
+      value={value}
+      onChangeText={onChange}
     ></TextInput>
   );
 };

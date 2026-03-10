@@ -21,6 +21,7 @@ import { KSaveButton } from "../components/KSaveButton";
 import { KInputSearchBudgets } from "../components/KInputSearchBudgets";
 import { KButtonSearchBudgets } from "../components/KButtonSearchBudgets";
 import { KButtonAddBudgets } from "../components/KButtonAddBudget";
+import { useTimedAllert } from "../hooks/useTimeAllert";
 
 const API_URL = envs.API_URL;
 
@@ -38,7 +39,7 @@ export const HomeScreen = () => {
   const { sessionData } = useAuth();
   //un array de BudgetsProps
   const [budgets, setBudgets] = useState<BudgetsProps[]>([]);
-  const [allertBudgets, setAllertBudgets] = useState<string | null>(null);
+  const [allertBudgets, setAllertBudgets] = useTimedAllert(); // este deja prestabilit 2000 in hook
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [searchName, setSearchName] = useState<string>("");
@@ -102,9 +103,37 @@ export const HomeScreen = () => {
     budgetsGet();
   }, [sessionData]);
 
-  const handleOnPressSearch = () => {
-    setIsSearching(false);
-    Keyboard.dismiss();
+  const handleOnPressSearch = async () => {
+    try {
+      const rawResponseBudgetFind = await fetch(
+        `${API_URL}/api/users/${sessionData?.userId}/budgets?name=${searchName}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${sessionData?.token}`,
+          },
+        },
+      );
+
+      const responseBudgetFind = await rawResponseBudgetFind.json();
+
+      if (rawResponseBudgetFind.ok) {
+        setBudgets(responseBudgetFind.data);
+        setIsSearching(false);
+        Keyboard.dismiss();
+        setSearchName("");
+      } else {
+        setAllertBudgets(responseBudgetFind.message);
+        Keyboard.dismiss();
+        setSearchName("");
+        setIsSearching(false);
+      }
+    } catch (err) {
+      setAllertBudgets("Server error");
+      setSearchName("");
+      console.log("FAILED /api/users/:userId/budgets/budgets?name=", err);
+    }
   };
 
   const handleOnAddBudget = () => {};
@@ -136,6 +165,8 @@ export const HomeScreen = () => {
           <KInputSearchBudgets
             placeHolder="Search"
             onFocus={() => setIsSearching(true)}
+            value={searchName}
+            onChange={(text: string) => setSearchName(text)}
           />
           {isSearching ? (
             <KButtonSearchBudgets onPress={handleOnPressSearch} />

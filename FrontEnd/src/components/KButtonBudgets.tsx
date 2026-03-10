@@ -12,10 +12,6 @@ export const KButtonBudgets = ({ isEditing, budgets }: KButtonBudgetsProps) => {
     return;
   }
 
-  const checkImage = require("../../assets/check.png");
-  const unCheckImage = require("../../assets/uncheck.png");
-
-  const imageSourceCheck = budgets.isCompleted ? checkImage : unCheckImage;
   return (
     <TouchableOpacity
       style={[
@@ -42,13 +38,7 @@ export const KButtonBudgets = ({ isEditing, budgets }: KButtonBudgetsProps) => {
           <TouchableOpacity>
             <Image
               style={styles.rightSideImageCheckStyle}
-              source={imageSourceCheck}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Image
-              style={styles.rightSideImageCheckStyle}
-              source={require("../../assets/delete.png")}
+              source={require("../../assets/editBudget.png")}
             />
           </TouchableOpacity>
         </View>
