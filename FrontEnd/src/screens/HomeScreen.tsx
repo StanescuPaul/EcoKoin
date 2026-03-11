@@ -22,6 +22,7 @@ import { KInputSearchBudgets } from "../components/KInputSearchBudgets";
 import { KButtonSearchBudgets } from "../components/KButtonSearchBudgets";
 import { KButtonAddBudgets } from "../components/KButtonAddBudget";
 import { useTimedAllert } from "../hooks/useTimeAllert";
+import { KFormBudget } from "../components/KFormBudget";
 
 const API_URL = envs.API_URL;
 
@@ -43,6 +44,7 @@ export const HomeScreen = () => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [searchName, setSearchName] = useState<string>("");
+  const [isVisibleForm, setIsVisileForm] = useState<boolean>(false);
 
   //useLayoutEffect este pentru lucru sincron ca sa se execute acest cod inainte de randarea ecranului useEffect randa dupa si se vedea header-ul vechi
   useLayoutEffect(() => {
@@ -136,46 +138,63 @@ export const HomeScreen = () => {
     }
   };
 
-  const handleOnAddBudget = () => {};
+  const handleOnAddBudget = () => {
+    setIsVisileForm(true);
+  };
+
+  const handleOnCloseForm = () => {
+    setIsVisileForm(false);
+  };
 
   //ToDo: scrollable si sa ii pot adauga headder-ul care a nu se miste cu scroll-ul
   return (
     //contentContainerStyle pentru tot ce se misca pe ecran iar style pentru ce e in spate ca si cand as da overscroll sa nu se vada alb in spate
-    <View style={styles.containerScroll}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text
-          style={[styles.allertBudgetStyle, { opacity: allertBudgets ? 1 : 0 }]}
+    <>
+      <View style={styles.containerScroll}>
+        <ScrollView contentContainerStyle={styles.container}>
+          <Text
+            style={[
+              styles.allertBudgetStyle,
+              { opacity: allertBudgets ? 1 : 0 },
+            ]}
+          >
+            {allertBudgets || ""}
+          </Text>
+          {budgets.map((budget) => (
+            <KButtonBudgets
+              key={budget.id}
+              isEditing={isEditing}
+              budgets={budget}
+            />
+          ))}
+        </ScrollView>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+          style={styles.searchView}
         >
-          {allertBudgets || ""}
-        </Text>
-        {budgets.map((budget) => (
-          <KButtonBudgets
-            key={budget.id}
-            isEditing={isEditing}
-            budgets={budget}
-          />
-        ))}
-      </ScrollView>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
-        style={styles.searchView}
-      >
-        <View style={styles.searchGroup}>
-          <KInputSearchBudgets
-            placeHolder="Search"
-            onFocus={() => setIsSearching(true)}
-            value={searchName}
-            onChange={(text: string) => setSearchName(text)}
-          />
-          {isSearching ? (
-            <KButtonSearchBudgets onPress={handleOnPressSearch} />
-          ) : (
-            <KButtonAddBudgets onPress={handleOnAddBudget} />
-          )}
-        </View>
-      </KeyboardAvoidingView>
-    </View>
+          <View style={styles.searchGroup}>
+            <KInputSearchBudgets
+              placeHolder="Search"
+              onFocus={() => setIsSearching(true)}
+              value={searchName}
+              onChange={(text: string) => setSearchName(text)}
+            />
+            {isSearching ? (
+              <KButtonSearchBudgets onPress={handleOnPressSearch} />
+            ) : (
+              <KButtonAddBudgets onPress={handleOnAddBudget} />
+            )}
+          </View>
+        </KeyboardAvoidingView>
+      </View>
+      {isVisibleForm && (
+        <KFormBudget
+          handleOnCloseForm={handleOnCloseForm}
+          visible={isVisibleForm}
+        />
+      )}
+    </>
   );
 };
 
@@ -183,6 +202,11 @@ const styles = StyleSheet.create({
   containerScroll: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
+  },
+  formContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   container: {
     flexGrow: 1,

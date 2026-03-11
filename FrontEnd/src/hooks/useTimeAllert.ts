@@ -14,5 +14,5 @@ export const useTimedAllert = (displayTime: number = 2000) => {
     }
   }, [message, displayTime]);
 
-  return [message, setMessage] as const; //folosesc as const pentru a spune ca prima e variabila si a doua functia de setare tot timpul
+  return [message, setMessage] as const; //folosesc as const pentru a stii exact care e forma a ce returnam , prima e variabila a doua functia de set
 };
