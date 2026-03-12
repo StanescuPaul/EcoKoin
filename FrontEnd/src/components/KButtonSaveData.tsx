@@ -3,12 +3,16 @@ import { Colors } from "../constants/Colors";
 
 interface KButtonSaveData {
   handleSaveData: () => void;
+  placeHolder: string;
 }
 
-export const KButtonSaveData = ({ handleSaveData }: KButtonSaveData) => {
+export const KButtonSaveData = ({
+  handleSaveData,
+  placeHolder,
+}: KButtonSaveData) => {
   return (
     <TouchableOpacity onPress={handleSaveData} style={styles.container}>
-      <Text style={styles.textStyle}>Save budget</Text>
+      <Text style={styles.textStyle}>{placeHolder}</Text>
     </TouchableOpacity>
   );
 };

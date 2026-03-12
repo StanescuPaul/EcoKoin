@@ -5,12 +5,14 @@ interface KGeneralInputProps {
   placeHolder: string;
   value?: string;
   onChange: (text: string) => void;
+  isNumeric: boolean;
 }
 
 export const KGeneralInput = ({
   placeHolder,
   value,
   onChange,
+  isNumeric,
 }: KGeneralInputProps) => {
   return (
     <TextInput
@@ -20,6 +22,7 @@ export const KGeneralInput = ({
       onChangeText={onChange}
       autoCapitalize="none"
       placeholderTextColor={Colors.secundary}
+      keyboardType={isNumeric ? "numeric" : "default"}
     ></TextInput>
   );
 };
@@ -30,7 +33,7 @@ const styles = StyleSheet.create({
     aspectRatio: 16 / 2.5,
     borderWidth: 0.2,
     borderRadius: 20,
-    color: Colors.primary,
+    color: Colors.textColor,
     backgroundColor: Colors.primary,
     paddingLeft: "4%",
     borderColor: Colors.secundary,

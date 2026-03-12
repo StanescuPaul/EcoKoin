@@ -5,6 +5,8 @@ import {
   StyleSheet,
   Platform,
   Text,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { useState } from "react";
 import { KGeneralInput } from "./KGeneralInput";
@@ -12,6 +14,11 @@ import { Colors } from "../constants/Colors";
 import { KButtonClose } from "./KButtonClose";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { KButtonSaveData } from "./KButtonSaveData";
+import { useTimedAllert } from "../hooks/useTimeAllert";
+import { envs } from "../config/envs";
+import { useAuth } from "../hooks/useAuth";
+
+const API_URL = envs.API_URL;
 
 interface BudgetProps {
   name?: string;
@@ -29,6 +36,7 @@ export const KFormBudget = ({
   handleOnCloseForm,
   visible,
 }: KFormBudgetProps) => {
+  const { sessionData } = useAuth();
   const [budget, setBudget] = useState<BudgetProps>({
     name: undefined,
     amount: "",
@@ -36,6 +44,7 @@ export const KFormBudget = ({
     endDate: undefined,
   });
   const [showSetDate, setShowSetDate] = useState<boolean>(false);
+  const [allertBudget, setAllertBudget] = useTimedAllert();
 
   const handleOnSetDate = () => {
     setShowSetDate(true);
@@ -56,45 +65,101 @@ export const KFormBudget = ({
     }
   };
 
-  const handleOnSaveData = () => {};
+  const handleOnSetBudget = async () => {
+    try {
+      const rawResponseBudgetPost = await fetch(
+        `${API_URL}/api/users/${sessionData?.userId}/budgets`,
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${sessionData?.token}`,
+          },
+          body: JSON.stringify(budget),
+        },
+      );
+
+      const responseBudgetPost = await rawResponseBudgetPost.json();
+
+      if (rawResponseBudgetPost.ok) {
+        setBudget({
+          name: "",
+          amount: "",
+          startDate: new Date(),
+          endDate: undefined,
+        });
+        handleOnCloseForm();
+      } else {
+        setAllertBudget(responseBudgetPost.message);
+        setBudget({ ...budget });
+        setShowSetDate(false);
+      }
+    } catch (err) {
+      setAllertBudget("Server error");
+      console.log("FAILED /api/users/:userId/budgets POST: ", err);
+    }
+  };
 
   return (
     <Modal animationType="slide" transparent={true} visible={visible}>
-      <View style={styles.overlay}>
-        <View style={styles.container}>
-          <KButtonClose handleOnClose={handleOnCloseForm} />
-          <KGeneralInput
-            placeHolder="Name"
-            value={budget.name}
-            onChange={(text: string) => setBudget({ ...budget, name: text })}
-          />
-          <KGeneralInput
-            placeHolder="Amount"
-            value={budget.amount}
-            onChange={(text: string) => setBudget({ ...budget, amount: text })}
-          />
-          {!showSetDate && (
-            <TouchableOpacity
-              style={styles.startDateButton}
-              onPress={handleOnSetDate}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.overlay}>
+          <View style={styles.container}>
+            <Text
+              style={[
+                styles.allertBudgetStyle,
+                { opacity: allertBudget ? 1 : 0 },
+              ]}
             >
-              <Text style={styles.textStyleStartDate}>Start date</Text>
-            </TouchableOpacity>
-          )}
-          {showSetDate && (
-            <View style={styles.dateContainer}>
-              <DateTimePicker
-                value={budget.startDate}
-                mode="date"
-                maximumDate={new Date()}
-                display={Platform.OS === "ios" ? "spinner" : "default"}
-                onChange={onDateChange}
+              {allertBudget || ""}
+            </Text>
+            <KButtonClose handleOnClose={handleOnCloseForm} />
+            <View style={styles.topPart}>
+              <KGeneralInput
+                placeHolder="Name"
+                value={budget.name}
+                onChange={(text: string) =>
+                  setBudget({ ...budget, name: text })
+                }
+                isNumeric={false}
               />
+              <KGeneralInput
+                placeHolder="Amount"
+                value={budget.amount}
+                onChange={(text: string) =>
+                  setBudget({ ...budget, amount: text })
+                }
+                isNumeric={true}
+              />
+              {!showSetDate && (
+                <TouchableOpacity
+                  style={styles.startDateButton}
+                  onPress={handleOnSetDate}
+                >
+                  <Text style={styles.textStyleStartDate}>
+                    Select start date
+                  </Text>
+                </TouchableOpacity>
+              )}
+              {showSetDate && (
+                <View style={styles.dateContainer}>
+                  <DateTimePicker
+                    value={budget.startDate}
+                    mode="date"
+                    maximumDate={new Date()}
+                    display={Platform.OS === "ios" ? "spinner" : "default"}
+                    onChange={onDateChange}
+                  />
+                </View>
+              )}
             </View>
-          )}
-          <KButtonSaveData handleSaveData={handleOnSaveData} />
+            <KButtonSaveData
+              handleSaveData={handleOnSetBudget}
+              placeHolder="Set budget"
+            />
+          </View>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };
@@ -116,10 +181,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 5,
     borderRadius: 20,
-    paddingVertical: "15%",
-    gap: "4%",
+    paddingVertical: "12%",
     borderWidth: 0.2,
     borderColor: Colors.primary,
+    justifyContent: "space-between",
   },
   startDateButton: {
     width: "85%",
@@ -136,9 +201,19 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   dateContainer: {
-    width: "90%",
+    width: "80%",
     aspectRatio: 16 / 10,
     justifyContent: "center",
     alignItems: "center",
+  },
+  topPart: {
+    width: "100%",
+    height: "80%",
+    alignItems: "center",
+    gap: "5%",
+  },
+  allertBudgetStyle: {
+    fontSize: 14,
+    color: Colors.textColor,
   },
 });

@@ -68,40 +68,38 @@ export const HomeScreen = () => {
   const handleOnPressEdit = () => {
     setIsEditing(true);
   };
-
   const handleOnPressSave = () => {
     setIsEditing(false);
   };
 
-  useEffect(() => {
-    if (!sessionData?.userId || !sessionData.token) {
-      return;
-    }
-    const budgetsGet = async () => {
-      try {
-        const rawResponseBudgetsGet = await fetch(
-          `${API_URL}/api/users/${sessionData.userId}/budgets`,
-          {
-            method: "GET",
-            headers: {
-              "Content-type": "application/json",
-              Authorization: `Bearer ${sessionData.token}`,
-            },
+  //Functie pentru fetch budgets
+  const budgetsGet = async () => {
+    try {
+      const rawResponseBudgetsGet = await fetch(
+        `${API_URL}/api/users/${sessionData?.userId}/budgets`,
+        {
+          method: "GET",
+          headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${sessionData?.token}`,
           },
-        );
+        },
+      );
 
-        const responseBudgetsGet = await rawResponseBudgetsGet.json();
+      const responseBudgetsGet = await rawResponseBudgetsGet.json();
 
-        if (rawResponseBudgetsGet.ok) {
-          setBudgets(responseBudgetsGet.data);
-        } else {
-          setAllertBudgets(responseBudgetsGet.message);
-        }
-      } catch (err) {
-        setAllertBudgets("Server error");
-        console.log("FAILED  /api/users/:userId/budgets", err);
+      if (rawResponseBudgetsGet.ok) {
+        setBudgets(responseBudgetsGet.data);
+      } else {
+        setAllertBudgets(responseBudgetsGet.message);
       }
-    };
+    } catch (err) {
+      setAllertBudgets("Server error");
+      console.log("FAILED  /api/users/:userId/budgets", err);
+    }
+  };
+
+  useEffect(() => {
     budgetsGet();
   }, [sessionData]);
 
@@ -144,6 +142,7 @@ export const HomeScreen = () => {
 
   const handleOnCloseForm = () => {
     setIsVisileForm(false);
+    budgetsGet();
   };
 
   //ToDo: scrollable si sa ii pot adauga headder-ul care a nu se miste cu scroll-ul
@@ -172,6 +171,7 @@ export const HomeScreen = () => {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
           style={styles.searchView}
+          enabled={!isVisibleForm} // pentru a nu se vedea cand suntem in form si creem un budget
         >
           <View style={styles.searchGroup}>
             <KInputSearchBudgets
