@@ -44,14 +44,23 @@ export const userProfileUpdate = globalCatch(
   async (req: tokenRequest, res: Response) => {
     const { userId } = req.user;
     const { newUserName, newEmail } = req.body;
+    const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     const user = await db.user.findUnique({ where: { id: userId } });
     if (!user) {
       throw new AppError("The user does not exist", 404);
     }
 
+    if (!emailRegex.test(newEmail)) {
+      throw new AppError("The email is not valid", 400);
+    }
+
     if (newUserName === user.userName && newEmail === user.email) {
       throw new AppError("There is no updates", 400);
+    }
+
+    if (newUserName && newUserName.length > 15) {
+      throw new AppError("Username is too long", 400);
     }
 
     const updateData: UpdateUserProps = {};
