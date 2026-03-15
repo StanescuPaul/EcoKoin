@@ -146,3 +146,32 @@ export const budgetUpdate = globalCatch(
     sendSuccess(res, budgetUpdate, "Update succesfully", 201);
   },
 );
+
+export const budgetDelete = globalCatch(
+  async (req: tokenRequest, res: Response) => {
+    const { userId } = req.user;
+    const { budgetId } = req.params;
+
+    if (!budgetId || typeof budgetId !== "string") {
+      throw new AppError("The budget does not exist", 404);
+    }
+
+    const existBudget = await db.budget.findUnique({
+      where: { id: budgetId },
+    });
+
+    if (!existBudget) {
+      throw new AppError("The budget does not exist", 404);
+    }
+
+    if (existBudget.userId !== userId) {
+      throw new AppError("The budget can not be deleted", 401);
+    }
+
+    const budgetDelete = await db.budget.delete({
+      where: { id: budgetId },
+    });
+
+    sendSuccess(res, budgetDelete, "Deleted succesfully");
+  },
+);

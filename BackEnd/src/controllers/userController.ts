@@ -56,7 +56,7 @@ export const userProfileUpdate = globalCatch(
     }
 
     if (newUserName === user.userName && newEmail === user.email) {
-      throw new AppError("There is no updates", 400);
+      throw new AppError("There are no updates", 400);
     }
 
     if (newUserName && newUserName.length > 15) {
