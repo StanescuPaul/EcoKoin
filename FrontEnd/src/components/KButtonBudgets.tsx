@@ -5,9 +5,16 @@ import { BudgetsProps } from "../screens/HomeScreen";
 interface KButtonBudgetsProps {
   isEditing: boolean;
   budgets: BudgetsProps | null;
+  handleSetBudgetId: () => void;
+  handleUpdateBudget: () => void;
 }
 
-export const KButtonBudgets = ({ isEditing, budgets }: KButtonBudgetsProps) => {
+export const KButtonBudgets = ({
+  isEditing,
+  budgets,
+  handleSetBudgetId,
+  handleUpdateBudget,
+}: KButtonBudgetsProps) => {
   if (!budgets) {
     return;
   }
@@ -35,10 +42,16 @@ export const KButtonBudgets = ({ isEditing, budgets }: KButtonBudgetsProps) => {
       </View>
       {isEditing && (
         <View style={styles.rightSide}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleUpdateBudget}>
             <Image
               style={styles.rightSideImageCheckStyle}
               source={require("../../assets/editBudget.png")}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleSetBudgetId}>
+            <Image
+              style={styles.rightSideImageCheckStyle}
+              source={require("../../assets/delete.png")}
             />
           </TouchableOpacity>
         </View>

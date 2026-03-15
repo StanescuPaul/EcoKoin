@@ -101,7 +101,7 @@ export const KFormBudget = ({
   };
 
   return (
-    <Modal animationType="slide" transparent={true} visible={visible}>
+    <Modal animationType="fade" transparent={true} visible={visible}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.overlay}>
           <View style={styles.container}>
