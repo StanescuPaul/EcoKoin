@@ -119,7 +119,7 @@ export const budgetUpdate = globalCatch(
 
     const numericAddAmount = parseFloat(addAmount || "");
 
-    if (addAmount !== undefined && isNaN(numericAddAmount)) {
+    if (addAmount && isNaN(numericAddAmount)) {
       throw new AppError("The amount is invalide", 400);
     }
 
