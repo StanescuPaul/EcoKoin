@@ -23,6 +23,7 @@ interface KUpdateBudgetModalProps {
   isVisible: boolean;
   budget: BudgetsProps | null;
   handleOnClose: () => void;
+  handleSuccessUpdateBudget: () => void;
 }
 
 interface BudgetsUpdateProps {
@@ -36,6 +37,7 @@ export const KUpdateBudgetModal = ({
   isVisible,
   budget,
   handleOnClose,
+  handleSuccessUpdateBudget,
 }: KUpdateBudgetModalProps) => {
   if (!budget) return null;
   const { sessionData } = useAuth();
@@ -60,6 +62,9 @@ export const KUpdateBudgetModal = ({
 
   const handleOnUpdateBudget = async () => {
     if (!sessionData) return null;
+
+    const now = new Date();
+    now.setHours(0, 0, 0, 0); //setam ora la 00:00 ca sa nu am treaba cu time zone
     try {
       const rawResponseUpdateBudget = await fetch(
         `${API_URL}/api/users/${sessionData.userId}/budgets/${budget.id}`,
@@ -69,9 +74,29 @@ export const KUpdateBudgetModal = ({
             "Content-type": "application/json",
             Authorization: `Bearer ${sessionData.token}`,
           },
-          body: JSON.stringify(updateBudget),
+          body: JSON.stringify({
+            ...updateBudget,
+            endDate: updateBudget.isCompleted ? now : updateBudget.endDate,
+          }), //pentru a trimite data daca faceam un useState inainte nu se schimbau inainte de a se trimite datele
         },
       );
+
+      const responseUpdateBudget = await rawResponseUpdateBudget.json();
+
+      if (rawResponseUpdateBudget.ok) {
+        setAllertUpdateBudget(responseUpdateBudget.message);
+        setUpdateBudget({
+          newName: budget.name,
+          addAmount: "",
+          endDate: undefined,
+          isCompleted: budget.isCompleted,
+        });
+        handleOnClose();
+        handleSuccessUpdateBudget();
+      } else {
+        setAllertUpdateBudget(responseUpdateBudget.message);
+        setUpdateBudget({ ...updateBudget });
+      }
     } catch (err) {
       setAllertUpdateBudget("Server error");
       console.log("ERROR on /api/users/:userId/budgets/:budgetId PUT: ", err);
@@ -82,6 +107,14 @@ export const KUpdateBudgetModal = ({
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.overlay}>
           <View style={styles.conatiner}>
+            <Text
+              style={[
+                styles.allertBudgetStyle,
+                { opacity: allertUpdateBudget ? 1 : 0 },
+              ]}
+            >
+              {allertUpdateBudget || ""}
+            </Text>
             <KButtonClose handleOnClose={handleOnClose} />
             <View style={styles.topSide}>
               <KGeneralInput
@@ -108,7 +141,10 @@ export const KUpdateBudgetModal = ({
               </TouchableOpacity>
             </View>
             <View style={styles.bottomSide}>
-              <TouchableOpacity style={styles.buttonUpdateStyle}>
+              <TouchableOpacity
+                style={styles.buttonUpdateStyle}
+                onPress={handleOnUpdateBudget}
+              >
                 <Text style={styles.buttonText}>Update</Text>
               </TouchableOpacity>
             </View>
@@ -181,5 +217,9 @@ const styles = StyleSheet.create({
   textGroup: {
     justifyContent: "center",
     paddingHorizontal: "5%",
+  },
+  allertBudgetStyle: {
+    fontSize: 14,
+    color: Colors.textColor,
   },
 });

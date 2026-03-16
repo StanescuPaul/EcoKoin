@@ -274,6 +274,7 @@ export const HomeScreen = () => {
           isVisible={isUpdateBudgetVisible}
           budget={selectedBudgetUpdate}
           handleOnClose={handleOnCloseUpdateBudget}
+          handleSuccessUpdateBudget={budgetsGet}
         />
       )}
     </>

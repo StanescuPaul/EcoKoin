@@ -42,12 +42,14 @@ export const KButtonBudgets = ({
       </View>
       {isEditing && (
         <View style={styles.rightSide}>
-          <TouchableOpacity onPress={handleUpdateBudget}>
-            <Image
-              style={styles.rightSideImageCheckStyle}
-              source={require("../../assets/editBudget.png")}
-            />
-          </TouchableOpacity>
+          {!budgets.isCompleted && (
+            <TouchableOpacity onPress={handleUpdateBudget}>
+              <Image
+                style={styles.rightSideImageCheckStyle}
+                source={require("../../assets/editBudget.png")}
+              />
+            </TouchableOpacity>
+          )}
           <TouchableOpacity onPress={handleSetBudgetId}>
             <Image
               style={styles.rightSideImageCheckStyle}
