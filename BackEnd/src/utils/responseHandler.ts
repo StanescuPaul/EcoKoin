@@ -4,14 +4,14 @@ import { envs } from "../config/envs";
 //din cauza basic value la message si status un trebuie sa il scriu in permanenta daca acesta este statusul
 export const sendSuccess = (
   res: Response,
-  data: any,
+  data?: any,
   message: string = "Success",
   status: number = 200,
 ) => {
   res.status(status).json({
     success: true,
     message,
-    data,
+    data: data ? data : null, // pentru ca nu trebuie sa trimit date in fiecare caz cum e la delete
   });
 };
 

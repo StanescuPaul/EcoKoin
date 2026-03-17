@@ -56,7 +56,7 @@ model Expenses{
   id String @unique @default(uuid())
   name String
   amount Float
-  date DateTime
+  date DateTime 
   type ExpensesType @default(VARIABLE)
 
   userId String

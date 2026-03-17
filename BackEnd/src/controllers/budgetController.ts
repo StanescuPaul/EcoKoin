@@ -60,14 +60,14 @@ export const budgetCreate = globalCatch(
     }
 
     if (numericAmount <= 0) {
-      throw new AppError("Amount have to be more then 0", 400);
+      throw new AppError("The amount have to be more then 0", 400);
     }
 
     if (!nameRegex.test(name)) {
       throw new AppError("The name must contain only letters", 400);
     }
 
-    if (name.trim().length > 18 && name.trim().length < 2) {
+    if (name.trim().length > 18 && name.length < 2) {
       throw new AppError("The name is too long or to short", 400);
     }
 
@@ -85,7 +85,7 @@ export const budgetCreate = globalCatch(
   },
 );
 
-interface BudgetUpdateProps {
+interface BudgetUpdateInput {
   newName?: string;
   addAmount?: string;
   endDate?: string;
@@ -94,7 +94,7 @@ interface BudgetUpdateProps {
 
 export const budgetUpdate = globalCatch(
   async (req: tokenRequest, res: Response) => {
-    const { newName, addAmount, endDate, isCompleted }: BudgetUpdateProps =
+    const { newName, addAmount, endDate, isCompleted }: BudgetUpdateInput =
       req.body;
     const { budgetId } = req.params;
     const { userId } = req.user;
@@ -123,37 +123,58 @@ export const budgetUpdate = globalCatch(
       throw new AppError("The new name must contain only letters", 400);
     }
 
-    if (newName && newName.trim().length > 18 && newName.trim().length < 3) {
-      throw new AppError("The name is too long or to short", 400);
+    if (newName && (newName.trim().length > 18 || newName.length < 3)) {
+      throw new AppError("The name must be between 3 and 18 letters", 400);
     }
 
-    const numericAddAmount = parseFloat(addAmount || "");
+    const budgetUpdateData: Prisma.BudgetUpdateInput = {
+      isCompleted: isCompleted,
+    };
+
+    if (newName) {
+      budgetUpdateData.name = newName;
+    }
+
+    const numericAddAmount: number = parseFloat(addAmount || ""); //o sa ia valaorea NaN daca este ""
 
     if (addAmount && isNaN(numericAddAmount)) {
-      throw new AppError("The amount is invalide", 400);
+      throw new AppError("The amount must be a number", 400);
     }
 
-    if (numericAddAmount <= 0) {
-      throw new AppError("The amount must be positive", 400);
+    if (addAmount && numericAddAmount <= 0) {
+      throw new AppError("The amount must be more then 0", 400);
     }
 
-    let newAmount: number | undefined;
-
-    if (numericAddAmount && findBudget) {
-      newAmount = findBudget.amount + numericAddAmount;
+    if (numericAddAmount) {
+      //daca vine string gol o sa fie valoarea NaN care este falsly
+      budgetUpdateData.amount = {
+        increment: numericAddAmount,
+      };
     }
 
-    const budgetUpdate = await db.budget.update({
+    if (endDate) {
+      budgetUpdateData.endDate = new Date(endDate);
+    }
+
+    await db.budget.update({
       where: { id: budgetId },
-      data: {
-        name: newName || undefined, //daca ii dau undefined nu se produc schimbari oricum in baza de date
-        amount: newAmount || undefined,
-        endDate: endDate ? new Date(endDate) : undefined,
-        isCompleted: isCompleted || undefined,
-      },
+      data: budgetUpdateData,
     });
 
-    sendSuccess(res, budgetUpdate, "Update succesfully", 201);
+    //varianta buna daca nu sunt si operatii pe update
+    // const budgetUpdate = await db.budget.update({
+    //   where: { id: budgetId },
+    //   data: {
+    //     name: newName || undefined, //daca ii dau undefined nu se produc schimbari oricum in baza de date
+    //     amount: {
+    //       increment: numericAddAmount,// baza de date face automat adunarea
+    //     },
+    //     endDate: endDate ? new Date(endDate) : undefined,
+    //     isCompleted: isCompleted || undefined,
+    //   },
+    // });
+
+    sendSuccess(res);
   },
 );
 
@@ -178,10 +199,10 @@ export const budgetDelete = globalCatch(
       throw new AppError("The budget can not be deleted", 401);
     }
 
-    const budgetDelete = await db.budget.delete({
+    await db.budget.delete({
       where: { id: budgetId },
     });
 
-    sendSuccess(res, budgetDelete, "Deleted succesfully");
+    sendSuccess(res, undefined, "Deleted succesfully", 200);
   },
 );
