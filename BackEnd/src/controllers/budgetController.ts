@@ -3,15 +3,17 @@ import { sendSuccess } from "../utils/responseHandler";
 import { AppError } from "../utils/appError";
 import { Response } from "express";
 import { tokenRequest } from "../utils/tokenRequest";
-import { globalCatch } from "../utils/throwController";
+import { globalCatch } from "../utils/globalCatch";
 import { Prisma } from "@prisma/client";
 
 interface BudgetProps {
-  name?: string;
+  name: string;
   amount: string;
   startDate: string; //toate string pentru ca asa vin din frontend si trebuie parsate inainte de a fi introduse in database
   endDate?: string;
 }
+
+const nameRegex = /^[a-zA-Z]+%/;
 
 export const budgetGet = globalCatch(
   async (req: tokenRequest, res: Response) => {
@@ -53,21 +55,25 @@ export const budgetCreate = globalCatch(
 
     const numericAmount = parseFloat(amount);
 
-    if (!amount || !startDate) {
-      throw new AppError("The amount and start date are empty", 400);
+    if (!amount || !startDate || !name) {
+      throw new AppError("The amount,name and start date are empty", 400);
     }
 
     if (numericAmount <= 0) {
       throw new AppError("Amount have to be more then 0", 400);
     }
 
-    if (name && name.length > 18) {
-      throw new AppError("The name is too long", 400);
+    if (!nameRegex.test(name)) {
+      throw new AppError("The name must contain only letters", 400);
+    }
+
+    if (name.trim().length > 18 && name.trim().length < 2) {
+      throw new AppError("The name is too long or to short", 400);
     }
 
     const budget = await db.budget.create({
       data: {
-        name: name ? name : null,
+        name: name,
         amount: numericAmount,
         startDate: new Date(startDate), // le transform in Date pentru ca din frontend ele o sa vina ca string json
         endDate: endDate ? new Date(endDate) : null,
@@ -113,8 +119,12 @@ export const budgetUpdate = globalCatch(
       throw new AppError("There is no updates", 400);
     }
 
-    if (newName && newName.length > 18) {
-      throw new AppError("The name is too long", 400);
+    if (newName && !nameRegex.test(newName)) {
+      throw new AppError("The new name must contain only letters", 400);
+    }
+
+    if (newName && newName.trim().length > 18 && newName.trim().length < 3) {
+      throw new AppError("The name is too long or to short", 400);
     }
 
     const numericAddAmount = parseFloat(addAmount || "");

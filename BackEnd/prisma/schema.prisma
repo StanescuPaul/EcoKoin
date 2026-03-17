@@ -18,11 +18,6 @@ enum ExpensesType{
   UNEXPECTED
 }
 
-enum Currency{
-  RON
-  EUR
-}
-
 model User{
   id String @unique @default(uuid())
   email String @unique
@@ -59,7 +54,7 @@ model Budget{
 
 model Expenses{
   id String @unique @default(uuid())
-  description String?
+  name String
   amount Float
   date DateTime
   type ExpensesType @default(VARIABLE)
@@ -74,7 +69,7 @@ model Expenses{
 
 model Savings{
   id String @unique @default(uuid())
-  description String?
+  name String
   amount Float
   date DateTime
 

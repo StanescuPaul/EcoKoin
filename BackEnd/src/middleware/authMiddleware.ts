@@ -1,7 +1,7 @@
 import { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { AppError } from "../utils/appError";
-import { globalCatch } from "../utils/throwController";
+import { globalCatch } from "../utils/globalCatch";
 import { envs } from "../config/envs";
 import { tokenRequest, tokenData } from "../utils/tokenRequest";
 

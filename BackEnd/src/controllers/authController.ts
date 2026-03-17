@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { tokenRequest } from "../utils/tokenRequest";
 import { sendSuccess } from "../utils/responseHandler";
 import { AppError } from "../utils/appError";
-import { globalCatch } from "../utils/throwController";
+import { globalCatch } from "../utils/globalCatch";
 import { envs } from "../config/envs";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";

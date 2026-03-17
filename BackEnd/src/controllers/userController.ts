@@ -2,7 +2,7 @@ import { Response } from "express";
 import { AppError } from "../utils/appError";
 import db from "../config/db";
 import { sendSuccess } from "../utils/responseHandler";
-import { globalCatch } from "../utils/throwController";
+import { globalCatch } from "../utils/globalCatch";
 import { tokenRequest } from "../utils/tokenRequest";
 
 interface userProps {
@@ -12,6 +12,8 @@ interface userProps {
   totalExpenses: number;
   totalSavings: number;
 }
+
+const nameRegex: RegExp = /^[a-zA-Z]+$/;
 
 export const userProfile = globalCatch(
   //de acum folosesc tokenRequest pentru ca extinde Request normal pentru a putea accesa proprietatea .user
@@ -57,6 +59,10 @@ export const userProfileUpdate = globalCatch(
 
     if (newUserName === user.userName && newEmail === user.email) {
       throw new AppError("There are no updates", 400);
+    }
+
+    if (newUserName && !nameRegex.test(newUserName)) {
+      throw new AppError("The name must contain only letters", 400);
     }
 
     if (newUserName && newUserName.length > 15) {
