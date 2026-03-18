@@ -99,6 +99,10 @@ export const expensesCreate = globalCatch(
 
     const numericAmount: number = parseFloat(amount);
 
+    if (isNaN(numericAmount)) {
+      throw new AppError("The amount must be a number", 400);
+    }
+
     if (numericAmount <= 0) {
       throw new AppError("The amount must be positive", 400);
     }
@@ -111,10 +115,11 @@ export const expensesCreate = globalCatch(
     };
 
     const resultExpensesCreate = await db.$transaction(async (tx) => {
+      //tx este o instanta locala identica cu baza de date si abia la final daca totul a mers bine acel tx aplica schimbarile si pe db-ul existent daca nu se sterge tx si db ramane neatinsa
       //$transaction creaza un mediu in care poti face mai multe operatii pe baza de date daca eseaza una esueaza toate si se da rollback la ce era inainte
       const newExpenses = await tx.expenses.create({
         data: {
-          ...expensesData,
+          ...expensesData, //destructuring si le da match la campuri singur dupa nume
           user: { connect: { id: userId } },
           budget: { connect: { id: budgetId } },
         },
@@ -129,6 +134,21 @@ export const expensesCreate = globalCatch(
         },
       });
 
+      const budget = await db.budget.findUnique({ where: { id: budgetId } });
+
+      if (!budget || budget.amount <= 0) {
+        throw new AppError("Insufficient funds", 400); // la orice throw error se opreste tranzactia si se da rollback la toate resursele din ea
+      }
+
+      await tx.budget.update({
+        where: { id: budgetId },
+        data: {
+          amount: {
+            decrement: expensesData.amount,
+          },
+        },
+      });
+
       return newExpenses; //returnez ultimul expenses pentru a putea folosi valoare
     });
 
@@ -137,9 +157,9 @@ export const expensesCreate = globalCatch(
 );
 
 interface ExpensesUpdateInput {
-  newName: string;
-  addAmount: string;
-  newType: string;
+  newName?: string;
+  addAmount?: string;
+  newType?: string;
 }
 
 //ToDo: continua ruta de update la expenses
@@ -165,13 +185,67 @@ export const expensesUpdate = globalCatch(
       throw new AppError("The name must contain only letters", 400);
     }
 
-    if ((newName && newName.trim().length > 18) || newName.length < 3) {
+    if (newName && (newName.trim().length > 18 || newName.length < 3)) {
       throw new AppError("The name must have between 3 and 18 letters", 400);
     }
 
-    const numericAddAmount = parseFloat(addAmount);
+    const expensesUpdateData: Prisma.ExpensesUpdateInput = {};
 
-    if (numericAddAmount <= 0) {
+    if (newName) {
+      expensesUpdateData.name = newName;
     }
+
+    //undefined pentru ca poate sa nu existe
+    let numericAddAmount: number | undefined; //am nevoie sa o instantiez in afara if-ului pentru a o putea vedea si folosi pentru update budget in caz ca aceasta exista
+    if (addAmount) {
+      numericAddAmount = parseFloat(addAmount);
+
+      if (isNaN(numericAddAmount)) {
+        //daca nu e numar dam eroare isNaN da true daca nu e numar
+        throw new AppError("The amount must be a number", 400);
+      }
+
+      if (numericAddAmount <= 0) {
+        throw new AppError("The amount must be greater then 0", 400);
+      }
+
+      expensesUpdateData.amount = {
+        increment: numericAddAmount,
+      };
+    }
+
+    if (newType) {
+      expensesUpdateData.type = newType as ExpensesType;
+    }
+
+    const expensesUpdateResult = await db.$transaction(async (tx) => {
+      const updatedExpenses = await tx.expenses.update({
+        where: { id: expensesId },
+        data: expensesUpdateData,
+      });
+
+      if (!updatedExpenses) {
+        throw new AppError("The expenses doesn'n exist", 400);
+      }
+
+      //daca exista un + la amount-ul expenses-ului existent il scadem din baza de date si de la budget
+      if (numericAddAmount) {
+        if (!updatedExpenses.budgetId) {
+          throw new AppError("The expenses doesn't have a budget", 404);
+        }
+
+        await tx.budget.update({
+          where: { id: updatedExpenses.budgetId },
+          data: {
+            amount: {
+              decrement: numericAddAmount,
+            },
+          },
+        });
+      }
+      return updatedExpenses;
+    });
+
+    sendSuccess(res, expensesUpdateResult, "Update succesfully");
   },
 );

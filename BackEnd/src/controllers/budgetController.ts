@@ -13,7 +13,7 @@ interface BudgetProps {
   endDate?: string;
 }
 
-const nameRegex = /^[a-zA-Z]+%/;
+const nameRegex = /^[a-zA-Z]+$/;
 
 export const budgetGet = globalCatch(
   async (req: tokenRequest, res: Response) => {
@@ -92,6 +92,7 @@ interface BudgetUpdateInput {
   isCompleted: boolean;
 }
 
+//update-ul poate fi facut in orice situatie si farar input-uri dar nu se v-a intampla nimic
 export const budgetUpdate = globalCatch(
   async (req: tokenRequest, res: Response) => {
     const { newName, addAmount, endDate, isCompleted }: BudgetUpdateInput =
