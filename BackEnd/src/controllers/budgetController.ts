@@ -204,6 +204,6 @@ export const budgetDelete = globalCatch(
       where: { id: budgetId },
     });
 
-    sendSuccess(res, undefined, "Deleted succesfully", 200);
+    sendSuccess(res, undefined, "Deleted succesfully");
   },
 );

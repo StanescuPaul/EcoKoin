@@ -162,7 +162,6 @@ interface ExpensesUpdateInput {
   newType?: string;
 }
 
-//ToDo: continua ruta de update la expenses
 export const expensesUpdate = globalCatch(
   async (req: tokenRequest, res: Response) => {
     const { userId } = req.user;
@@ -247,5 +246,32 @@ export const expensesUpdate = globalCatch(
     });
 
     sendSuccess(res, expensesUpdateResult, "Update succesfully");
+  },
+);
+
+export const expensesDelete = globalCatch(
+  async (req: tokenRequest, res: Response) => {
+    const { userId } = req.user;
+    const { expensesId } = req.params;
+
+    if (!userId) {
+      throw new AppError("Invalide user id", 403);
+    }
+
+    if (!expensesId || typeof expensesId !== "string") {
+      throw new AppError("Invalide expenses id", 403);
+    }
+
+    const expenses = await db.expenses.findUnique({
+      where: { id: expensesId },
+    });
+
+    if (!expenses) {
+      throw new AppError("The expenses doesn't exist", 404);
+    }
+
+    await db.expenses.delete({ where: { id: expensesId } });
+
+    sendSuccess(res, undefined, "Deleted succesfully");
   },
 );

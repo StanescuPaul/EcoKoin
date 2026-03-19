@@ -13,6 +13,7 @@ app.use("/api", authRoutes);
 app.use("/api/users/:userId", userRoutes);
 app.use("/api/users/:userId/budgets", budgetRoutes);
 app.use("/api/budgets/:budgetId", expensesRoutes);
+app.use("/api", expensesRoutes); //pentru a nu lungi prea mult rutele si pentru frontend si pentru backend
 
 app.use(globalHandler); // aici se arunca erorile din globalCatch
 
