@@ -249,6 +249,7 @@ export const expensesUpdate = globalCatch(
   },
 );
 
+//To Do: sa scazi din budget cand stergi un expenses
 export const expensesDelete = globalCatch(
   async (req: tokenRequest, res: Response) => {
     const { userId } = req.user;
