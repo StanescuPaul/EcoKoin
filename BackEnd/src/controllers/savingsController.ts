@@ -154,12 +154,12 @@ export const savingsCreate = globalCatch(
 
 interface SavingsUpdateInput {
   newName?: string;
-  newAmount?: string;
+  addAmount?: string;
 }
 
 export const savingsUpdate = globalCatch(
   async (req: tokenRequest, res: Response) => {
-    const { newName, newAmount }: SavingsUpdateInput = req.body;
+    const { newName, addAmount }: SavingsUpdateInput = req.body;
     const { userId } = req.user;
     const { savingsId } = req.params;
 
@@ -167,11 +167,11 @@ export const savingsUpdate = globalCatch(
       throw new AppError("Invalide user id", 403);
     }
 
-    if (!savingsId && typeof savingsId !== "string") {
+    if (!savingsId || typeof savingsId !== "string") {
       throw new AppError("Invalide savings id", 403);
     }
 
-    if (!newName && !newAmount) {
+    if (!newName && !addAmount) {
       throw new AppError("There is no updates", 400);
     }
 
@@ -188,5 +188,107 @@ export const savingsUpdate = globalCatch(
     if (newName) {
       savingsUpdateData.name = newName;
     }
+
+    let numericAmount: number | undefined;
+    if (addAmount) {
+      numericAmount = parseFloat(addAmount);
+
+      if (isNaN(numericAmount)) {
+        throw new AppError("The amount must pe a number", 400);
+      }
+
+      if (numericAmount <= 0) {
+        throw new AppError("The amount must be mode then 0", 400);
+      }
+
+      savingsUpdateData.amount = numericAmount;
+    }
+
+    const savingsUpdateResponse = await db.$transaction(async (tx) => {
+      const updateSavings = await tx.savings.update({
+        where: { id: savingsId, userId: userId },
+        data: savingsUpdateData,
+      });
+
+      if (!updateSavings) {
+        throw new AppError("The savings doesn't exist", 404);
+      }
+
+      if (numericAmount) {
+        await tx.user.update({
+          where: { id: userId },
+          data: {
+            totalSavings: {
+              increment: numericAmount,
+            },
+          },
+        });
+
+        await tx.budget.update({
+          where: { id: updateSavings.budgetId },
+          data: {
+            amount: {
+              decrement: numericAmount,
+            },
+          },
+        });
+      }
+      return updateSavings;
+    });
+
+    sendSuccess(res, savingsUpdateResponse, "Update succesfully");
+  },
+);
+
+export const savingsDelete = globalCatch(
+  async (req: tokenRequest, res: Response) => {
+    const { userId } = req.user;
+    const { savingsId } = req.params;
+
+    if (!userId) {
+      throw new AppError("Invalide user id", 403);
+    }
+
+    if (!savingsId || typeof savingsId !== "string") {
+      throw new AppError("Invalide savings id", 403);
+    }
+
+    const savings = await db.savings.findUnique({
+      where: { id: savingsId, userId: userId },
+    });
+
+    if (!savings) {
+      throw new AppError("The savings doesn't exist", 404);
+    }
+
+    await db.$transaction(async (tx) => {
+      await tx.budget.update({
+        where: { id: savings.budgetId },
+        data: {
+          amount: {
+            increment: savings.amount,
+          },
+        },
+      });
+
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          totalSavings: {
+            decrement: savings.amount,
+          },
+        },
+      });
+
+      const savingsDelete = await tx.savings.delete({
+        where: { id: savingsId, userId: userId, budgetId: savings.budgetId },
+      });
+
+      if (!savingsDelete) {
+        throw new AppError("The savings doesn't exist", 404);
+      }
+    });
+
+    sendSuccess(res, undefined, "Deleted succesfully");
   },
 );

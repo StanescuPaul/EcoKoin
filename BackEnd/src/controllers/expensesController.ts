@@ -219,7 +219,7 @@ export const expensesUpdate = globalCatch(
 
     const expensesUpdateResult = await db.$transaction(async (tx) => {
       const updatedExpenses = await tx.expenses.update({
-        where: { id: expensesId },
+        where: { id: expensesId, userId: userId },
         data: expensesUpdateData,
       });
 
@@ -249,7 +249,6 @@ export const expensesUpdate = globalCatch(
   },
 );
 
-//To Do: sa scazi din budget cand stergi un expenses
 export const expensesDelete = globalCatch(
   async (req: tokenRequest, res: Response) => {
     const { userId } = req.user;
@@ -271,7 +270,37 @@ export const expensesDelete = globalCatch(
       throw new AppError("The expenses doesn't exist", 404);
     }
 
-    await db.expenses.delete({ where: { id: expensesId } });
+    if (expenses.userId !== userId) {
+      throw new AppError("Forbident access", 402);
+    }
+
+    await db.$transaction(async (tx) => {
+      await tx.budget.update({
+        where: { id: expenses.budgetId },
+        data: {
+          amount: {
+            increment: expenses.amount,
+          },
+        },
+      });
+
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          totalExpenses: {
+            decrement: expenses.amount,
+          },
+        },
+      });
+
+      const deleteSavings = await tx.expenses.delete({
+        where: { id: expensesId, userId: userId, budgetId: expenses.budgetId },
+      });
+
+      if (!deleteSavings) {
+        throw new AppError("The savings doesn't exist", 404);
+      }
+    });
 
     sendSuccess(res, undefined, "Deleted succesfully");
   },
