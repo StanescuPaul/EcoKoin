@@ -3,6 +3,12 @@ export type RootStackParamList = {
   Login: undefined;
   Home: undefined;
   UserProfileScreen: undefined;
+  ExpensesAndSavingsScreen: undefined;
+};
+
+export type RootTabParamList = {
+  ExpensesScreen: undefined;
+  SavingsScreen: undefined;
 };
 
 //dam parametrii la ecrane doar cand avem nevoie de parametrii pe acel ecran cum ar fi id-ul unui task pe care il folosim in ecranul task-ului

@@ -91,7 +91,7 @@ export const KFormBudget = ({
         handleOnCloseForm();
       } else {
         setAllertBudget(responseBudgetPost.message);
-        setBudget({ ...budget });
+        setBudget({ ...budget, startDate: new Date() });
         setShowSetDate(false);
       }
     } catch (err) {

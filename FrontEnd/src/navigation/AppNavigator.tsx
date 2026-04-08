@@ -10,7 +10,7 @@ import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { userProps } from "../utils/verifyTokenAuth";
 import { Colors } from "../constants/Colors";
-import { Button } from "react-native";
+import { ExpensesAndSavingsTabs } from "./TabNavigator";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -85,6 +85,10 @@ export const AppNavigator = () => {
               <UserProfileScreen {...props} onLogOut={handleOnLogOut} />
             )}
           </Stack.Screen>
+          <Stack.Screen
+            name="ExpensesAndSavingsScreen"
+            component={ExpensesAndSavingsTabs}
+          />
         </>
       )}
     </Stack.Navigator>
