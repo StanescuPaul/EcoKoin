@@ -228,6 +228,13 @@ export const HomeScreen = () => {
           {budgets.map((budget) => (
             <KButtonBudgets
               key={budget.id}
+              onPress={() =>
+                navigation.navigate("ExpensesAndSavingsScreen", {
+                  budgetName: budget.name,
+                  budgetAmount: budget.amount,
+                  budgetId: budget.id,
+                })
+              }
               isEditing={isEditing}
               budgets={budget}
               handleUpdateBudget={() => handleOnUpdateBudget(budget)}

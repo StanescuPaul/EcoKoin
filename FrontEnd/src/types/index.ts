@@ -1,14 +1,28 @@
+import { NavigatorScreenParams } from "@react-navigation/native";
+
 export type RootStackParamList = {
   Register: undefined;
   Login: undefined;
   Home: undefined;
   UserProfileScreen: undefined;
-  ExpensesAndSavingsScreen: undefined;
+  ExpensesAndSavingsScreen: {
+    budgetId: string;
+    budgetName?: string;
+    budgetAmount: string;
+  };
 };
 
 export type RootTabParamList = {
-  ExpensesScreen: undefined;
-  SavingsScreen: undefined;
+  ExpensesScreen: {
+    budgetId: string;
+    budgetName?: string;
+    budgetAmount: string;
+  };
+  SavingsScreen: {
+    budgetId: string;
+    budgetName?: string;
+    budgetAmount: string;
+  };
 };
 
 //dam parametrii la ecrane doar cand avem nevoie de parametrii pe acel ecran cum ar fi id-ul unui task pe care il folosim in ecranul task-ului

@@ -7,6 +7,7 @@ interface KButtonBudgetsProps {
   budgets: BudgetsProps | null;
   handleSetBudgetId: () => void;
   handleUpdateBudget: () => void;
+  onPress: () => void;
 }
 
 export const KButtonBudgets = ({
@@ -14,6 +15,7 @@ export const KButtonBudgets = ({
   budgets,
   handleSetBudgetId,
   handleUpdateBudget,
+  onPress,
 }: KButtonBudgetsProps) => {
   if (!budgets) {
     return;
@@ -25,6 +27,7 @@ export const KButtonBudgets = ({
         styles.container,
         budgets.isCompleted && styles.completedBudgetStyle,
       ]}
+      onPress={onPress}
     >
       <View style={styles.leftSide}>
         <Text style={styles.nameBudgetStyle}>{budgets.name}</Text>
