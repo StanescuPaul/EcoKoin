@@ -88,6 +88,7 @@ export const AppNavigator = () => {
           <Stack.Screen
             name="ExpensesAndSavingsScreen"
             component={ExpensesAndSavingsTabs}
+            options={{ headerShown: false }}
           />
         </>
       )}
