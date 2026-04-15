@@ -7,22 +7,24 @@ import { KBackButton } from "../components/KBackButton";
 import { KEditButton } from "../components/KEditButton";
 import { KSaveButton } from "../components/KSaveButton";
 import { Colors } from "../constants/Colors";
+import { KButtonExpensesAndSavings } from "../components/KButtonExpensesAndSavings";
 
 interface ExpensesScreenProps {}
 
 export const ExpensesScreen = () => {
   const route = useRoute<RouteProp<RootTabParamList, "ExpensesScreen">>();
   const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList>>();
-  const { budgetId, budgetName, budgetAmount } = route.params;
+  const { budgetId, budgetName, budgetAmount, budgetCompleted } = route.params;
 
-  const [isEditing, setIsEditing] = useState<Boolean>(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
+  //Rendering the props for the header of the screen
   useLayoutEffect(() => {
     navigation.setOptions({ title: budgetName || "Expenses" });
     navigation.setOptions({
       headerLeft: () => <KBackButton onPressBack={navigation.goBack} />,
       headerRight: () =>
-        isEditing ? (
+        budgetCompleted ? null : isEditing ? (
           <KSaveButton onPressSave={handleOnSave} />
         ) : (
           <KEditButton onPressEdit={handleOnEdit} />
@@ -40,7 +42,9 @@ export const ExpensesScreen = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.containerScroll}></ScrollView>
+      <ScrollView contentContainerStyle={styles.containerScroll}>
+        <KButtonExpensesAndSavings isEditing={isEditing} />
+      </ScrollView>
       <View style={styles.totalView}>
         <Text style={styles.totalStyle}>Budget: {budgetAmount}</Text>
       </View>
@@ -57,8 +61,8 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: Colors.backgroundColor,
     alignItems: "center",
-    gap: "1.2%",
-    marginTop: "6%",
+    gap: 10,
+    marginTop: "8%",
   },
   totalStyle: {
     color: Colors.textColor,
@@ -67,7 +71,7 @@ const styles = StyleSheet.create({
   },
   totalView: {
     position: "absolute",
-    backgroundColor: "rgba(0, 0, 0, 0.2)",
+    backgroundColor: "rgba(0, 0, 0, 0.1)",
     top: "0%",
     alignItems: "center",
     width: "100%",

@@ -1,5 +1,3 @@
-import { NavigatorScreenParams } from "@react-navigation/native";
-
 export type RootStackParamList = {
   Register: undefined;
   Login: undefined;
@@ -9,6 +7,7 @@ export type RootStackParamList = {
     budgetId: string;
     budgetName?: string;
     budgetAmount: string;
+    budgetCompleted: boolean;
   };
 };
 
@@ -17,11 +16,13 @@ export type RootTabParamList = {
     budgetId: string;
     budgetName?: string;
     budgetAmount: string;
+    budgetCompleted: boolean;
   };
   SavingsScreen: {
     budgetId: string;
     budgetName?: string;
     budgetAmount: string;
+    budgetCompleted: boolean;
   };
 };
 

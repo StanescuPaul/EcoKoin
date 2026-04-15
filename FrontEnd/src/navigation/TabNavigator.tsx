@@ -11,7 +11,7 @@ const Tab = createBottomTabNavigator<RootTabParamList>();
 export const ExpensesAndSavingsTabs = ({
   route,
 }: StackScreenProps<RootStackParamList, "ExpensesAndSavingsScreen">) => {
-  const { budgetId, budgetName, budgetAmount } = route.params;
+  const { budgetId, budgetName, budgetAmount, budgetCompleted } = route.params;
 
   return (
     <Tab.Navigator
@@ -33,13 +33,13 @@ export const ExpensesAndSavingsTabs = ({
       <Tab.Screen
         name="ExpensesScreen"
         component={ExpensesScreen}
-        initialParams={{ budgetName, budgetId, budgetAmount }}
+        initialParams={{ budgetName, budgetId, budgetAmount, budgetCompleted }}
         options={{ tabBarLabel: `Expenses` }}
       />
       <Tab.Screen
         name="SavingsScreen"
         component={SavingsScreen}
-        initialParams={{ budgetName, budgetId, budgetAmount }}
+        initialParams={{ budgetName, budgetId, budgetAmount, budgetCompleted }}
         options={{ tabBarLabel: "Savings" }}
       />
     </Tab.Navigator>

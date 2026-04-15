@@ -158,7 +158,6 @@ export const HomeScreen = () => {
     budgetsGet();
   };
 
-  //Pentru partea de delete a unui budget
   const handleOnNoDelete = () => {
     setIsDeleteVisible(false);
     setSelectedBudgetId(null);
@@ -233,6 +232,7 @@ export const HomeScreen = () => {
                   budgetName: budget.name,
                   budgetAmount: budget.amount,
                   budgetId: budget.id,
+                  budgetCompleted: budget.isCompleted,
                 })
               }
               isEditing={isEditing}
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: Colors.backgroundColor,
     alignItems: "center",
-    gap: "1.2%",
+    gap: 10,
   },
   allertBudgetStyle: {
     fontSize: 18,
